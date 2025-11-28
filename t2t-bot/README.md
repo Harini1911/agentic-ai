@@ -36,12 +36,6 @@ uv run main.py
 -   `/long <prompt>`: Test long context.
 -   `/quit`: Exit.
 
-### Automated Testing
-Run the automated test suite to verify all features:
-```bash
-uv run test_bot.py
-```
-
 ## Project Structure
 
 -   `bot.py`: Core `GeminiBot` class with Laminar instrumentation.

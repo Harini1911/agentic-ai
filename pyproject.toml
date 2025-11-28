@@ -1,0 +1,17 @@
+[project]
+name = "agentic-ai"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "google-genai>=1.52.0",
+    "pillow>=12.0.0",
+]
+
+[tool.uv.workspace]
+members = [
+    "examples/text2text",
+    "examples/thinking",
+    "t2t-bot",
+]

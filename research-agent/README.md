@@ -63,11 +63,3 @@ uv run create_sample_pdf.py
 
 -   `main.py`: Core logic, Pydantic schemas, and Gemini client setup.
 -   `tools.py`: Utilities for file uploading and audio processing.
-
-## Testing
-
-Run the unit tests to verify the system:
-
-```bash
-uv run python -m unittest test_agent.py
-```

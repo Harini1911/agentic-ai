@@ -1,0 +1,13 @@
+# Environment variables
+.env
+
+# PDF file
+sample_research.pdf
+
+# markdown file
+implementation_details.md
+
+#python file
+create_sample_pdf.py
+list_models.py
+test_agent.py

@@ -1,14 +1,16 @@
 # Multi-Modal Research Agent
 
-A powerful AI agent capable of performing research using **text**, **documents (PDFs)**, and **audio**. It leverages Google's Gemini models for multi-modal understanding and outputs structured, machine-readable data.
+A powerful AI agent capable of performing research using **text**, **documents (PDFs)**, and **audio**. It leverages Google's Gemini models for multi-modal understanding, performs **grounded Google Searches**, and provides an interactive terminal interface.
 
 ## Features
 
--   **Multi-Modal Input**: Accepts text queries, PDF documents, and audio files (WAV, MP3, etc.).
--   **Structured Output**: Returns research findings as consistent JSON objects (Dictionary keyed by topic), making it easy to integrate into other applications.
--   **Audio Processing**: Automatically converts and uploads audio files for analysis.
--   **Observability**: Integrated with **Laminar** for real-time tracing and debugging of agent execution.
--   **Type Safety**: Built with **Pydantic** for robust data validation and schema definition.
+-   **Interactive Chat**: A continuous terminal session for querying and file analysis.
+-   **Multi-Modal Context**: Upload and analyze PDF documents and audio files (`.mp3`, `.wav`) seamlessly.
+-   **Grounded Search**: Use `/search` to perform Google Searches that return structured data with verified citations (`[1](url)`).
+-   **Context-Aware**: Combine file uploads with web search (e.g., "Compare this PDF with online news").
+-   **Audio Output**: Generate speech from text using the `/speak` command.
+-   **Structured Output**: Returns research findings as consistent JSON objects, parsing unstructed data into `ResearchPoint`s.
+-   **Observability**: Integrated with **Laminar** for real-time tracing.
 
 ## Prerequisites
 
@@ -29,37 +31,34 @@ A powerful AI agent capable of performing research using **text**, **documents (
     ```
 
 3.  **Set up Environment Variables**:
-    Copy the example file and add your API keys:
+    Create a `.env` file and add your keys:
     ```bash
-    cp .env.example .env
+    GEMINI_API_KEY=your_key_here
+    LAMINAR_API_KEY=your_key_here
     ```
-    Edit `.env` and fill in:
-    -   `GEMINI_API_KEY`: Your Google Gemini API key.
-    -   `LAMINAR_API_KEY`: Your Laminar project API key (for tracing).
 
 ## Usage
 
-### Basic Run
-To run the agent with the default test query and sample PDF (if present):
+Start the interactive agent:
 
 ```bash
 uv run main.py
 ```
 
-This will:
-1.  Analyze a simple text query ("What is the capital of France?").
-2.  Look for `sample_research.pdf`.
-3.  If found, upload it to Gemini, analyze it ("Applications of AI in healthcare"), and print the structured results.
-4.  Clean up the uploaded file.
+### Commands
 
-### Generating a Sample PDF
-If you don't have a PDF to test with, generate one:
+Once inside the interactive loop:
 
-```bash
-uv run create_sample_pdf.py
-```
+-   **/search <query>**: Perform a Google Search.
+    -   *Example*: `/search What is the capital of Australia?`
+    -   *Returns*: Key points with citations and a list of sources.
+-   **/file <path>**: Upload a file (PDF or Audio) to the context.
+    -   *Example*: `/file ./doc.pdf`
+-   **/speak <text>**: text-to-speech generation.
+    -   *Example*: `/speak Research complete.`
+-   **Text Query**: Any other input is treated as a question about the active context.
 
 ## Project Structure
 
--   `main.py`: Core logic, Pydantic schemas, and Gemini client setup.
--   `tools.py`: Utilities for file uploading and audio processing.
+-   `main.py`: Core logic, interactive loop, and Gemini client setup.
+-   `tools.py`: Utilities for Google Search grounding, audio processing, and file handling.

@@ -6,8 +6,12 @@ sample_research.pdf
 
 # markdown file
 implementation_details.md
+git_workflow.md
 
 #python file
 create_sample_pdf.py
 list_models.py
 test_agent.py
+test_tts.py
+*.wav
+*.mp3

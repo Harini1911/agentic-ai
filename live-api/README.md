@@ -241,7 +241,7 @@ Access at: `http://localhost:8000`
 
 ---
 
-## 📊 Observability with Laminar
+## Observability with Laminar
 
 All demos automatically trace to Laminar for observability:
 
@@ -255,7 +255,7 @@ View traces at: [https://www.lmnr.ai/](https://www.lmnr.ai/)
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Run Unit Tests
 

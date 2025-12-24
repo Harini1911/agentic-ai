@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+test_bot.py
+
+#text files
+long_context.txt
+explanation.md
+# Virtual environments
+.venv
+
+# Environment variables
+.env

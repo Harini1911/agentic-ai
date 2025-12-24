@@ -1,0 +1,8 @@
+{"event": "REQUEST", "type": "CHAT_MESSAGE", "input_message": "I have 2 dogs in my house.", "model": "gemini-2.5-flash", "timestamp": 1763974322.3394918}
+{"event": "RESPONSE", "type": "CHAT_MESSAGE", "input_message": "I have 2 dogs in my house.", "response_text": "Oh, that's wonderful! Double the love and double the fun!\n\nWhat kind of dogs are they, and what are their names? I'd love to hear more about them if you'd like to share!", "latency_ms": 5192.82, "timestamp": 1763974327.53233}
+{"event": "REQUEST", "type": "CHAT_MESSAGE", "input_message": "How many paws are in my house?", "model": "gemini-2.5-flash", "timestamp": 1763974327.532495}
+{"event": "RESPONSE", "type": "CHAT_MESSAGE", "input_message": "How many paws are in my house?", "response_text": "Okay, let's do the math!\n\nSince each dog has 4 paws, and you have 2 dogs:\n\n2 dogs * 4 paws/dog = **8 paws**\n\nYou have 8 paws in your house!", "latency_ms": 3122.14, "timestamp": 1763974330.6546488}
+{"event": "CHAT_HISTORY", "role": "user", "message": "I have 2 dogs in my house.", "timestamp": 1763974330.6547992}
+{"event": "CHAT_HISTORY", "role": "model", "message": "Oh, that's wonderful! Double the love and double the fun!\n\nWhat kind of dogs are they, and what are their names? I'd love to hear more about them if you'd like to share!", "timestamp": 1763974330.655308}
+{"event": "CHAT_HISTORY", "role": "user", "message": "How many paws are in my house?", "timestamp": 1763974330.6553783}
+{"event": "CHAT_HISTORY", "role": "model", "message": "Okay, let's do the math!\n\nSince each dog has 4 paws, and you have 2 dogs:\n\n2 dogs * 4 paws/dog = **8 paws**\n\nYou have 8 paws in your house!", "timestamp": 1763974330.6554208}

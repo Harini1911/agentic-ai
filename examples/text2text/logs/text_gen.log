@@ -1,0 +1,63 @@
+2025-11-24 12:39:57,195 - INFO - REQUEST: Explain quantum physics in one line.
+2025-11-24 12:39:57,195 - INFO - AFC is enabled with max remote calls: 10.
+2025-11-24 12:40:04,338 - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2025-11-24 12:40:04,340 - INFO - RESPONSE: Quantum physics describes reality at its smallest scales, where particles behave as probabilities and waves, not definite objects, defying classical intuition.
+2025-11-24 12:41:40,315 - INFO - REQUEST: Explain quantum physics in one line.
+2025-11-24 12:41:40,315 - INFO - AFC is enabled with max remote calls: 10.
+2025-11-24 12:41:48,250 - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2025-11-24 12:41:48,251 - INFO - RESPONSE: Quantum physics explains that energy and matter exist in discrete packets and behave probabilistically at the fundamental, subatomic level.
+2025-11-24 12:41:59,801 - INFO - REQUEST: Explain Agentic ai in one line.
+2025-11-24 12:41:59,801 - INFO - AFC is enabled with max remote calls: 10.
+2025-11-24 12:42:05,954 - INFO - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2025-11-24 12:42:05,958 - INFO - RESPONSE: Agentic AI is an AI that can autonomously plan and execute a series of actions to achieve a specific goal.
+{"time": "2025-11-24T07:14:44.588931", "event": "REQUEST", "data": {"prompt": "Tell me a short proverb."}}
+{"time": "2025-11-24T07:14:45.973898", "event": "RESPONSE", "data": {"response": "Here's one:\n\n**Look before you leap.**"}}
+{"time": "2025-11-24T07:15:19.551268", "event": "REQUEST", "data": {"prompt": "Explain Agentic AI in one line."}}
+{"time": "2025-11-24T07:15:22.460178", "event": "RESPONSE", "data": {"response": "Agentic AI refers to AI systems that can autonomously plan and execute tasks to achieve specific goals in a given environment."}}
+{"time": "2025-11-24T09:38:38.733803", "event": "REQUEST", "data": {"prompt": "Tell me places to visit in chennai."}}
+{"time": "2025-11-24T09:38:51.832139", "event": "RESPONSE", "data": {"response": "Chennai, often called the \"Gateway to South India,\" is a vibrant city rich in culture, history, and delicious food. Here's a comprehensive list of places to visit:\n\n**1. Beaches:**\n\n*   **Marina Beach:** The second-longest urban beach in the world, stretching for 13 km. It's a bustling hub with food stalls, vendors, a lighthouse, and a lively atmosphere, especially during evenings.\n*   **Elliot's Beach (Besant Nagar Beach):** A cleaner and more serene beach compared to Marina. It's popular among locals for evening strolls, cafe hopping, and enjoying the relaxed vibe. The Karl Schmidt Memorial is located here.\n\n**2. Temples & Religious Sites:**\n\n*   **Kapaleeshwarar Temple (Mylapore):** A magnificent Shiva temple showcasing stunning Dravidian architecture with its towering gopuram (entrance tower). It's located in the historic Mylapore neighborhood, which itself is worth exploring for its cultural charm.\n*   **Parthasarathy Temple (Triplicane):** One of the oldest temples in Chennai, dedicated to Lord Krishna. It features intricate carvings and a beautiful tank (temple pond).\n*   **Santhome Basilica:** A beautiful Gothic-style Roman Catholic basilica built over the tomb of St. Thomas the Apostle, who is believed to have visited India. It's a significant pilgrimage site.\n*   **Sri Vadapalani Andavar Temple:** A popular Murugan temple, known for its intricate sculptures and vibrant festivals.\n\n**3. Historical & Architectural Marvels:**\n\n*   **Fort St. George:** The first English fortress in India, founded in 1644. It houses St. Mary's Church (the oldest Anglican church in India) and the Fort Museum, which displays artifacts from the British colonial era.\n*   **Government Museum (Egmore):** One of the oldest museums in India, it boasts a vast collection including bronze sculptures, Amravati Buddhist sculptures, South Indian musical instruments, and more. It's a great place to delve into the region's history and art.\n*   **Ripon Building:** A magnificent neo-classical building serving as the seat of the Chennai Corporation. Its white facade and grand architecture make it a prominent landmark.\n\n**4. Cultural & Art Centers:**\n\n*   **DakshinaChitra:** A unique living heritage museum located on the East Coast Road (ECR), showcasing the traditional lifestyle, art, and architecture of South Indian states. You can explore recreated houses, watch artisans at work, and enjoy cultural performances.\n*   **Kalakshetra Foundation:** A renowned cultural academy dedicated to preserving traditional Indian art forms, especially Bharatanatyam. You can attend performances or visit their craft center.\n\n**5. Nature & Wildlife:**\n\n*   **Guindy National Park:** One of the smallest national parks in India, located right in the heart of the city. It's home to blackbucks, spotted deer, and various bird species.\n*   **Arignar Anna Zoological Park (Vandalur Zoo):** Located a bit outside the city, it's one of the largest zoos in South Asia. A great place for families, it houses a wide array of animals, including tigers, lions, elephants, and various primates.\n*   **Muttukadu Boating & Windsurfing:** If you head a bit further south on ECR, Muttukadu offers boating facilities and is a popular spot for water sports like windsurfing and kayaking.\n\n**6. Shopping & Food:**\n\n*   **T. Nagar (Thyagaraya Nagar):** The ultimate shopping destination in Chennai, famous for silks, sarees, jewelry, and traditional clothing. It's always bustling with activity.\n*   **Pondy Bazaar:** Another popular shopping area known for clothing, accessories, footwear, and street food.\n*   **Mylapore:** Beyond the temple, Mylapore offers a unique cultural experience with its traditional market, street food, and old-world charm.\n*   **Besant Nagar:** Known for its cafes, restaurants, and a more relaxed atmosphere near Elliot's Beach.\n*   **Express Avenue & Phoenix Market City:** Modern shopping malls offering international brands, multiplex cinemas, and food courts.\n\n**7. Day Trips from Chennai:**\n\n*   **Mahabalipuram (Mamallapuram):** A UNESCO World Heritage site, famous for its ancient rock-cut temples, monolithic sculptures, and the iconic Shore Temple. (Approx. 1.5-2 hours drive).\n*   **Kanchipuram:** Known as the \"City of a Thousand Temples\" and famous for its exquisite Kanchipuram silk sarees. (Approx. 2-2.5 hours drive).\n\n**Tips for Visiting Chennai:**\n\n*   **Best Time to Visit:** October to February offers pleasant weather. Summers (March-June) can be very hot and humid.\n*   **Getting Around:** Auto-rickshaws, ride-sharing apps (Uber, Ola), and the Chennai Metro are convenient options.\n*   **Hydrate:** Always carry water, especially during warmer months.\n*   **Bargain:** When shopping at local markets, polite bargaining is common.\n*   **Dress Modestly:** When visiting temples, it's respectful to dress modestly, covering shoulders and knees. Some temples may require you to remove footwear.\n\nEnjoy your trip to Chennai!"}}
+2025-11-26 09:30:12,052 - INFO - REQUEST: {'prompt': 'Tell me places to visit in chennai.'}
+2025-11-26 09:30:23,600 - INFO - RESPONSE: {'response': 'Chennai, the capital of Tamil Nadu, is a vibrant city that beautifully blends tradition with modernity. It's known for its rich history, Dravidian architecture, long sandy beaches, and delicious South Indian cuisine.
+
+Here are some of the best places to visit in Chennai:
+
+**1. Beaches:**
+
+*   **Marina Beach:** The second-longest urban beach in the world, Marina Beach is an iconic symbol of Chennai. It's perfect for an evening stroll, enjoying local snacks, horse riding, and watching the sunrise or sunset.
+*   **Besant Nagar Beach (Elliott's Beach):** A cleaner and more relaxed alternative to Marina Beach, "Bessie" is popular among locals and expats. It has a lovely promenade with cafes and restaurants, and the Ashtalakshmi Temple is nearby.
+*   **Covelong Beach:** Located a bit outside the city (on the East Coast Road), Covelong is a picturesque fishing village beach known for its serenity and water sports like surfing.
+
+**2. Temples:**
+
+*   **Kapaleeshwarar Temple (Mylapore):** A magnificent Shiva temple showcasing classic Dravidian architecture, vibrant gopurams (towers), and intricate carvings. It's a truly spiritual and visually stunning experience.
+*   **Parthasarathy Temple (Triplicane):** One of the oldest temples in Chennai, dedicated to Lord Krishna (as Parthasarathy). It features impressive sculptures and a serene atmosphere.
+*   **Ashtalakshmi Temple (Besant Nagar):** Uniquely located right on the seashore, this temple is dedicated to Goddess Lakshmi in her eight forms. The sound of the waves adds to its tranquil ambiance.
+*   **Vadakapalani Murugan Temple:** A popular temple dedicated to Lord Muruga, known for its intricate sculptures and vibrant festive celebrations.
+
+**3. Historical & Cultural Sites:**
+
+*   **Fort St. George:** The first English fortress in India, built by the British East India Company. It houses the St. Mary's Church (the oldest Anglican church in India) and a museum with artifacts from the British era.
+*   **San Thome Basilica:** A stunning Roman Catholic basilica built over the tomb of St. Thomas the Apostle, one of the twelve apostles of Jesus. It's a significant pilgrimage site and an architectural marvel.
+*   **Government Museum and Art Gallery (Egmore):** One of the oldest museums in India, it boasts a vast collection of archaeological artifacts, bronze sculptures (especially from the Chola period), natural history exhibits, and an impressive art gallery.
+*   **DakshinaChitra:** An open-air living history museum showcasing the art, architecture, lifestyles, and crafts of South India. It's located just south of Chennai on the ECR and offers a wonderful cultural immersion.
+*   **Cholamandal Artists' Village:** India's largest artists' village, established in 1966. It's a haven for contemporary art, featuring galleries, studios, and exhibitions by local artists.
+
+**4. Nature & Wildlife:**
+
+*   **Guindy National Park:** One of the smallest national parks in the country and one of the few located within a city. It's home to blackbucks, spotted deer, jackals, and various bird species.
+*   **Arignar Anna Zoological Park (Vandalur Zoo):** A large and well-maintained zoo located on the outskirts of Chennai, home to a wide variety of animals, birds, and reptiles.
+*   **Madras Crocodile Bank Trust and Centre for Herpetology:** Located on the ECR, this conservation center is dedicated to protecting crocodiles, alligators, and other reptiles. It's a fascinating place to learn about these creatures.
+
+**5. Shopping & Food:**
+
+*   **T. Nagar (Thyagaraya Nagar):** The commercial heart of Chennai, famous for its bustling markets selling traditional silk sarees, jewelry, and clothing. A shopper's paradise.
+*   **Mylapore:** Beyond the Kapaleeshwarar Temple, Mylapore is a cultural hub with traditional shops, Carnatic music schools, and eateries serving authentic South Indian snacks like filter coffee, idli, dosa, and vada.
+
+**Tips for Visiting Chennai:**
+
+*   **Best Time to Visit:** October to March offers pleasant weather. Summers (April-June) can be very hot and humid.
+*   **Transportation:** Auto-rickshaws, taxis (Ola/Uber), and the Chennai Metro are convenient ways to get around.
+*   **Dress Code:** When visiting temples, dress modestly (shoulders and knees covered). Remove your footwear before entering.
+*   **Local Cuisine:** Don't miss trying local delicacies like dosa, idli, vada, sambar, rasam, filter coffee, and traditional South Indian thali meals.
+
+Enjoy your trip to Chennai!'}

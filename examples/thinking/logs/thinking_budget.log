@@ -1,0 +1,11 @@
+2025-11-26 09:55:57,102 - INFO - REQUEST: {'prompt': 'Provide a list of 3 famous physicists and their key contributions', 'model': 'gemini-2.5-flash', 'thinking_budget': 1024}
+2025-11-26 09:56:03,933 - INFO - RESPONSE: {'response': 'Here are 3 famous physicists and their key contributions:
+
+1.  **Sir Isaac Newton**
+    *   **Key Contributions:** Developed the three Laws of Motion, formulated the Law of Universal Gravitation, co-invented calculus (with Gottfried Leibniz), and made significant contributions to optics, including explaining the composition of white light.
+
+2.  **Albert Einstein**
+    *   **Key Contributions:** Developed the Theories of Special and General Relativity, which revolutionized our understanding of space, time, gravity, and the universe. He also famously derived the mass-energy equivalence formula (E=mc²) and provided a groundbreaking explanation of the photoelectric effect, which contributed to the development of quantum theory.
+
+3.  **Galileo Galilei**
+    *   **Key Contributions:** Often called the "Father of Observational Astronomy" and the "Father of Modern Physics." He made pioneering telescopic observations (e.g., the moons of Jupiter, phases of Venus, sunspots) that supported the Copernican heliocentric model. He also conducted fundamental studies on motion, inertia, and falling objects, laying the groundwork for classical mechanics.'}

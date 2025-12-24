@@ -45,12 +45,7 @@ live-api/
 
 ---
 
-## Documentation
 
-- **[CONCEPTS.md](docs/CONCEPTS.md)**: Deep dive into Gemini Live API architecture and internals
-- **[Implementation Plan](../../../.gemini/antigravity/brain/9a9e5073-e3db-4976-b330-a7fc27e04e78/implementation_plan.md)**: Detailed technical design and verification plan
-
----
 
 ## Architecture
 

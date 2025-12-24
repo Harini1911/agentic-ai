@@ -169,10 +169,10 @@ uv run python3 server/server.py
 - Remote: http://YOUR_SERVER_IP:8000
 
 **What's Available:**
-- ✅ API documentation at `/docs`
-- ✅ Token generation endpoint `/api/token`
-- ✅ Health check endpoint `/health`
-- ✅ Information dashboard
+- API documentation at `/docs`
+- Token generation endpoint `/api/token`
+- Health check endpoint `/health`
+- Information dashboard
 
 **Note on Browser Client:**
 The Gemini Live API's ephemeral tokens are designed for server-to-server or native app integration. For a full browser-based voice client, you would need to:
@@ -180,11 +180,9 @@ The Gemini Live API's ephemeral tokens are designed for server-to-server or nati
 2. Implement a WebSocket proxy on the server
 3. Or use the Python CLI demos on a machine with audio hardware
 
-The backend implementation is complete and production-ready for integration with web/mobile apps!
-
 ---
 
-## 🔧 Usage Examples
+##  Usage Examples
 
 ### Basic Audio Streaming
 
@@ -274,7 +272,7 @@ uv run pytest tests/integration -v
 
 ---
 
-## 🔒 Security Best Practices
+## Security Best Practices
 
 1. **Never expose API keys**: Use ephemeral tokens for client-side access
 2. **Short token lifetimes**: Default 30 minutes for active sessions
@@ -286,7 +284,7 @@ See [CONCEPTS.md](docs/CONCEPTS.md#5-ephemeral-tokens) for detailed security gui
 
 ---
 
-## 📖 Key Concepts
+## Key Concepts
 
 ### Session States
 
@@ -311,7 +309,7 @@ See [CONCEPTS.md](docs/CONCEPTS.md#5-ephemeral-tokens) for detailed security gui
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Audio Issues
 

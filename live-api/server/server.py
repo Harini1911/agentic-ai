@@ -1,8 +1,8 @@
 """
-FastAPI server for ephemeral token generation.
+FastAPI server for ephemeral token generation and WebSocket proxy.
 
-This server provides secure token generation for client-side access to Gemini Live API.
-It never exposes the API key to clients, only short-lived ephemeral tokens.
+This server provides secure token generation for client-side access to Gemini Live API
+and WebSocket proxy for browser-based real-time communication.
 """
 
 import datetime
@@ -11,17 +11,27 @@ from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from google import genai
 from pydantic import BaseModel
+import websockets
 
-# Load environment variables
+# Load environment variables first
 load_dotenv()
 
-app = FastAPI(title="Live AI Assistant Token Server")
+# Import WebSocket proxy - must be after load_dotenv
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Now we can import from the parent directory
+from websocket_proxy import WebSocketProxyServer
+
+
+app = FastAPI(title="Live AI Assistant Server")
 
 # Configure CORS for web client
 app.add_middleware(
@@ -34,9 +44,12 @@ app.add_middleware(
 
 # Initialize Gemini client
 client = genai.Client(
-    api_key=os.getenv("GOOGLE_API_KEY"),  # Changed from GEMINI_API_KEY
+    api_key=os.getenv("GOOGLE_API_KEY"),
     http_options={"api_version": "v1alpha"},
 )
+
+# Initialize WebSocket proxy server
+ws_proxy = WebSocketProxyServer()
 
 # Token cache to reuse valid tokens
 _token_cache: Optional[dict] = None
@@ -59,6 +72,12 @@ class HealthResponse(BaseModel):
     message: str
 
 
+class MetricsResponse(BaseModel):
+    """Response model for metrics endpoint."""
+    active_sessions: int
+    sessions: list
+
+
 @app.get("/")
 async def root():
     """Serve the web client."""
@@ -70,7 +89,17 @@ async def health_check():
     """Health check endpoint."""
     return HealthResponse(
         status="healthy",
-        message="Token server is running"
+        message="Live AI Assistant server is running"
+    )
+
+
+@app.get("/api/metrics", response_model=MetricsResponse)
+async def get_metrics():
+    """Get metrics for all active sessions."""
+    sessions = ws_proxy.get_all_metrics()
+    return MetricsResponse(
+        active_sessions=len(sessions),
+        sessions=sessions
     )
 
 
@@ -100,18 +129,18 @@ async def generate_token():
         
         # Generate new token
         expire_time = now + datetime.timedelta(minutes=30)
-        new_session_expire_time = now + datetime.timedelta(minutes=1)
+        new_session_expire_time = now + datetime.timedelta(minutes=5)
         
         token = client.auth_tokens.create(
             config={
-                "uses": 1,  # Single session per token
+                "uses": 10,  # Multiple sessions per token for web app
                 "expire_time": expire_time,
                 "new_session_expire_time": new_session_expire_time,
                 "live_connect_constraints": {
-                    "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash-native-audio-preview-12-2025"),
+                    "model": os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp"),
                     "config": {
                         "session_resumption": {},
-                        "response_modalities": ["AUDIO"],
+                        "response_modalities": ["AUDIO", "TEXT"],
                     },
                 },
                 "http_options": {"api_version": "v1alpha"},
@@ -138,13 +167,32 @@ async def generate_token():
         )
 
 
+@app.websocket("/ws/live")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    WebSocket endpoint for browser clients to connect to Gemini Live API.
+    
+    This endpoint proxies WebSocket connections to the Gemini Live API,
+    handling audio streaming, tool execution, and session management.
+    """
+    await websocket.accept()
+    await ws_proxy.handle_client(websocket, "/ws/live")
+
+
+# Serve static files (CSS, JS, etc.)
+app.mount("/static", StaticFiles(directory=CLIENT_DIR), name="static")
+
+
 if __name__ == "__main__":
     import uvicorn
     
     host = os.getenv("SERVER_HOST", "localhost")
     port = int(os.getenv("SERVER_PORT", 8000))
     
-    print(f"🚀 Starting token server on http://{host}:{port}")
+    print(f"🚀 Starting Live AI Assistant server on http://{host}:{port}")
     print(f"📝 API docs available at http://{host}:{port}/docs")
+    print(f"🌐 Web app available at http://{host}:{port}")
+    print(f"🔌 WebSocket endpoint: ws://{host}:{port}/ws/live")
     
     uvicorn.run(app, host=host, port=port)
+

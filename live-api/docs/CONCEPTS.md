@@ -522,7 +522,7 @@ config = {
 
 **Security problem:**
 ```javascript
-// ❌ NEVER DO THIS
+// NEVER DO THIS
 const apiKey = "AIza...";  // Exposed in client-side code
 const session = await gemini.connect({ apiKey });
 ```
@@ -535,7 +535,7 @@ const session = await gemini.connect({ apiKey });
 
 **Solution: Ephemeral Tokens**
 ```javascript
-// ✅ Secure approach
+// Secure approach
 const token = await fetch('/api/token').then(r => r.json());
 const session = await gemini.connect({ token: token.value });
 ```
@@ -699,10 +699,10 @@ token = client.auth_tokens.create(
 
 3. **Set minimal token lifetimes:**
    ```python
-   # ✅ Short-lived tokens
+   # Short-lived tokens
    expire_time = now + datetime.timedelta(minutes=30)
    
-   # ❌ Long-lived tokens (security risk)
+   # Long-lived tokens (security risk)
    expire_time = now + datetime.timedelta(days=30)
    ```
 

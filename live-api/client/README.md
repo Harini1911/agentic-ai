@@ -39,11 +39,11 @@ Your Laptop Browser          Remote Server
 
 ## Features
 
-- ✅ Real-time voice interaction
-- ✅ Secure ephemeral tokens
-- ✅ Beautiful UI with status indicators
-- ✅ Activity logs
-- ✅ Works on any device with a browser
+- Real-time voice interaction
+- Secure ephemeral tokens
+- Beautiful UI with status indicators
+- Activity logs
+- Works on any device with a browser
 
 ## Troubleshooting
 

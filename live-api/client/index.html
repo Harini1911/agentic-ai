@@ -5,354 +5,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini Live AI Assistant</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-        }
-
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 2em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.9em;
-        }
-
-        .status {
-            background: #f5f5f5;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-
-        .status-indicator.disconnected {
-            background: #e74c3c;
-        }
-
-        .status-indicator.connecting {
-            background: #f39c12;
-        }
-
-        .status-indicator.connected {
-            background: #2ecc71;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            flex: 1;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-connect {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-connect:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-disconnect {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-disconnect:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
-        }
-
-        .log {
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-            line-height: 1.6;
-        }
-
-        .log-entry {
-            margin-bottom: 8px;
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        .log-entry.info {
-            color: #3498db;
-        }
-
-        .log-entry.success {
-            color: #2ecc71;
-        }
-
-        .log-entry.error {
-            color: #e74c3c;
-            background: #fee;
-        }
-
-        .log-entry.warning {
-            color: #f39c12;
-        }
-
-        .timestamp {
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            color: #999;
-            font-size: 0.85em;
-        }
-
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .note {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            color: #856404;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <!-- Background gradient -->
+    <div class="bg-gradient"></div>
+
+    <!-- Main container -->
     <div class="container">
-        <h1>🎙️ Gemini Live AI</h1>
-        <p class="subtitle">Real-time voice assistant powered by Gemini</p>
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🎙️</span>
+                <h1>Gemini Live AI</h1>
+            </div>
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Disconnected</span>
+            </div>
+        </header>
 
-        <div class="note">
-            <strong>⚠️ Browser Limitation:</strong> Due to how Gemini Live API handles ephemeral tokens, direct browser
-            WebSocket connections require additional setup. For now, use the Python CLI demos on a machine with audio
-            hardware, or check the logs below to see the connection attempt.
-        </div>
+        <!-- Main interface -->
+        <main class="main-content">
+            <!-- Microphone button -->
+            <div class="mic-container">
+                <button class="mic-button" id="micButton" disabled>
+                    <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23" stroke-linecap="round" stroke-width="2"></line>
+                        <line x1="8" y1="23" x2="16" y2="23" stroke-linecap="round" stroke-width="2"></line>
+                    </svg>
+                </button>
+                <p class="mic-label" id="micLabel">Click to Connect</p>
+            </div>
 
-        <div class="status">
-            <span class="status-indicator disconnected" id="statusIndicator"></span>
-            <span id="statusText">Disconnected</span>
-        </div>
+            <!-- Waveform visualization -->
+            <div class="waveform-container">
+                <canvas id="waveformCanvas" width="800" height="100"></canvas>
+            </div>
 
+            <!-- Transcript display -->
+            <div class="transcript-container" id="transcriptContainer">
+                <div class="transcript-placeholder">
+                    <p>Your conversation will appear here...</p>
+                </div>
+            </div>
+
+            <!-- Tool execution panel -->
+            <div class="tools-panel" id="toolsPanel">
+                <!-- Tool cards will be dynamically added here -->
+            </div>
+        </main>
+
+        <!-- Controls -->
         <div class="controls">
-            <button class="btn-connect" id="connectBtn" onclick="connect()">
-                Connect
+            <button class="control-btn" id="resetBtn" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Reset
             </button>
-            <button class="btn-disconnect" id="disconnectBtn" onclick="disconnect()" disabled>
-                Disconnect
+            <button class="control-btn" id="metricsBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Metrics
             </button>
         </div>
 
-        <div class="log" id="log">
-            <div class="log-entry info">
-                <span class="timestamp">[Ready]</span> Click "Connect" to attempt connection...
+        <!-- Metrics modal -->
+        <div class="modal" id="metricsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Session Metrics</h2>
+                    <button class="modal-close" id="closeMetrics">&times;</button>
+                </div>
+                <div class="modal-body" id="metricsContent">
+                    <div class="metric-card">
+                        <div class="metric-label">Turn Count</div>
+                        <div class="metric-value" id="turnCount">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Tool Calls</div>
+                        <div class="metric-value" id="toolCallsCount">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Session Duration</div>
+                        <div class="metric-value" id="sessionDuration">0s</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Session State</div>
+                        <div class="metric-value" id="sessionState">Disconnected</div>
+                    </div>
+                </div>
             </div>
-            <div class="log-entry warning">
-                <span class="timestamp">[Note]</span> For production use, run:
-                <code>uv run python3 examples/basic_audio_demo.py</code>
-            </div>
-        </div>
-
-        <div class="footer">
-            Built using <a href="https://ai.google.dev/api/multimodal-live" target="_blank">Gemini Live API</a>
         </div>
     </div>
 
-    <script type="module">
-        import { LiveAPIClient } from "https://esm.run/@google/generative-ai@0.21.0/live";
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Built with <a href="https://ai.google.dev/api/multimodal-live" target="_blank">Gemini Live API</a> |
+            Powered by <a href="https://www.lmnr.ai/" target="_blank">Laminar</a></p>
+    </footer>
 
-        const API_URL = window.location.origin;
-        let client = null;
-        let mediaStream = null;
-
-        function log(message, type = 'info') {
-            const logDiv = document.getElementById('log');
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-
-            const timestamp = new Date().toLocaleTimeString();
-            entry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
-
-            logDiv.appendChild(entry);
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-
-        function updateStatus(status, text) {
-            const indicator = document.getElementById('statusIndicator');
-            const statusText = document.getElementById('statusText');
-
-            indicator.className = `status-indicator ${status}`;
-            statusText.textContent = text;
-        }
-
-        async function getToken() {
-            try {
-                log('Fetching ephemeral token...', 'info');
-                const response = await fetch(`${API_URL}/api/token`, {
-                    method: 'POST',
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                log('✅ Token received', 'success');
-                return data.token;
-            } catch (error) {
-                log(`❌ Token fetch failed: ${error.message}`, 'error');
-                throw error;
-            }
-        }
-
-        window.connect = async function () {
-            try {
-                const connectBtn = document.getElementById('connectBtn');
-                const disconnectBtn = document.getElementById('disconnectBtn');
-
-                connectBtn.disabled = true;
-                updateStatus('connecting', 'Connecting...');
-
-                // Get ephemeral token
-                const token = await getToken();
-                log(`Token format: ${token.substring(0, 30)}...`, 'info');
-
-                // Request microphone access
-                log('Requesting microphone access...', 'info');
-                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                log('✅ Microphone access granted', 'success');
-
-                // Try to connect using the SDK
-                log('Attempting to connect to Gemini Live API...', 'info');
-                log('⚠️ Note: This may fail due to token format limitations', 'warning');
-
-                client = new LiveAPIClient({ token: token });
-
-                client.on('open', () => {
-                    log('✅ Connected successfully!', 'success');
-                    updateStatus('connected', 'Connected - Speak now!');
-                    disconnectBtn.disabled = false;
-                });
-
-                client.on('close', () => {
-                    log('Connection closed', 'warning');
-                    updateStatus('disconnected', 'Disconnected');
-                    connectBtn.disabled = false;
-                    disconnectBtn.disabled = true;
-                });
-
-                client.on('error', (error) => {
-                    log(`❌ Error: ${error.message}`, 'error');
-                    log('💡 Tip: Use Python CLI demos instead: uv run python3 examples/basic_audio_demo.py', 'info');
-                });
-
-                await client.connect();
-
-            } catch (error) {
-                log(`❌ Connection failed: ${error.message}`, 'error');
-                log('💡 The browser client has limitations. Use the Python CLI demos for full functionality.', 'warning');
-                updateStatus('disconnected', 'Connection failed');
-                document.getElementById('connectBtn').disabled = false;
-            }
-        };
-
-        window.disconnect = function () {
-            if (client) {
-                client.disconnect();
-                client = null;
-            }
-
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-
-            log('Disconnected', 'info');
-            updateStatus('disconnected', 'Disconnected');
-            document.getElementById('connectBtn').disabled = false;
-            document.getElementById('disconnectBtn').disabled = true;
-        };
-    </script>
+    <!-- Load application scripts -->
+    <script src="/static/app.js" type="module"></script>
 </body>
 
 </html>

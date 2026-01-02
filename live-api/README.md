@@ -184,7 +184,7 @@ The backend implementation is complete and production-ready for integration with
 
 ---
 
-## 🔧 Usage Examples
+## Usage Examples
 
 ### Basic Audio Streaming
 

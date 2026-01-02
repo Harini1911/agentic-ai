@@ -137,10 +137,9 @@ async def generate_token():
                 "expire_time": expire_time,
                 "new_session_expire_time": new_session_expire_time,
                 "live_connect_constraints": {
-                    "model": os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp"),
+                    "model": os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash-native-audio-preview-12-2025"),
                     "config": {
-                        "session_resumption": {},
-                        "response_modalities": ["AUDIO", "TEXT"],
+                        "session_resumption": {}
                     },
                 },
                 "http_options": {"api_version": "v1alpha"},

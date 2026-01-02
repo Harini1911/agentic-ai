@@ -112,13 +112,16 @@ class LiveSession:
     async def connect(self):
         """Connect to Gemini Live API."""
         try:
+            print(f"🔄 Connecting session {self.session_id}...")
+            
             # Initialize Gemini client
             client = genai.Client(
                 api_key=os.getenv("GOOGLE_API_KEY"),
                 http_options={"api_version": "v1alpha"}
             )
             
-            model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
+            model = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash-native-audio-preview-12-2025")
+            print(f"📡 Using model: {model}")
             
             # Prepare tools configuration
             tools = [
@@ -126,20 +129,22 @@ class LiveSession:
                 *self.tool_executor.get_tool_declarations()
             ]
             
-            # Create session
+            # Create session with simplified config
+            # Note: response_modalities is not needed for native audio models
             self.gemini_session = SessionManager(
                 client=client,
                 model=model,
                 config={
                     "system_instruction": "You are a helpful AI assistant with access to real-time information. Use tools when needed to provide accurate, up-to-date information. Keep responses natural and conversational.",
-                    "tools": tools,
-                    "response_modalities": ["AUDIO", "TEXT"]
+                    "tools": tools
                 },
                 on_state_change=self._on_state_change
             )
             
+            print(f"🔌 Connecting to Gemini Live API...")
             await self.gemini_session.connect()
             self.is_active = True
+            print(f"✅ Session {self.session_id} connected successfully!")
             
             # Send connection success to client
             await self._send_to_client({
@@ -152,6 +157,10 @@ class LiveSession:
             asyncio.create_task(self._receive_loop())
             
         except Exception as e:
+            print(f"❌ Connection error for session {self.session_id}: {type(e).__name__}: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            
             await self._send_to_client({
                 "type": "error",
                 "error": f"Connection failed: {str(e)}"
@@ -291,9 +300,17 @@ class LiveSession:
     async def _send_to_client(self, message: dict):
         """Send message to browser client."""
         try:
-            await self.websocket.send(json.dumps(message))
+            # Check if WebSocket is still open before sending
+            if not self.websocket.client_state.name == "CONNECTED":
+                return
+            
+            # FastAPI/Starlette WebSocket handles JSON serialization automatically
+            # Just send the dict directly
+            await self.websocket.send_json(message)
         except Exception as e:
-            print(f"Error sending to client: {e}")
+            # Silently ignore errors if connection is already closed
+            if "websocket.close" not in str(e).lower():
+                print(f"Error sending to client {self.session_id}: {type(e).__name__}: {e}")
     
     def get_metrics(self) -> dict:
         """Get session metrics."""
@@ -328,18 +345,25 @@ class WebSocketProxyServer:
             await session.connect()
             
             # Handle incoming messages
-            async for message in websocket:
+            while True:
                 try:
-                    data = json.loads(message)
-                    await self._handle_message(session, data)
-                except json.JSONDecodeError:
-                    # Assume it's raw audio data
-                    await session.send_audio(bytes.fromhex(message))
+                    # Receive message from WebSocket
+                    data = await websocket.receive_text()
+                    
+                    try:
+                        message = json.loads(data)
+                        await self._handle_message(session, message)
+                    except json.JSONDecodeError:
+                        # Assume it's raw audio data in hex format
+                        await session.send_audio(bytes.fromhex(data))
                 except Exception as e:
                     print(f"Error handling message: {e}")
+                    break
                     
         except Exception as e:
             print(f"Client error: {e}")
+            import traceback
+            traceback.print_exc()
         finally:
             # Cleanup
             await session.disconnect()

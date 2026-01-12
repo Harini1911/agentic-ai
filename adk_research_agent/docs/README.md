@@ -6,7 +6,7 @@ This folder contains day-by-day learning documentation for the Agentic AI journe
 
 ### Day 1 - Google ADK Quickstart
 **File:** [day-01-adk-quickstart.md](./day-01-adk-quickstart.md)  
-**Date:** January 12, 2026  
+**Date:** January 7, 2026  
 **Topics:**
 - Setting up first ADK agent
 - Understanding agent structure

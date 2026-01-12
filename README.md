@@ -4,6 +4,13 @@ This repository contains projects and examples demonstrating Agentic AI capabili
 
 ## Structure
 
+-   **`adk_research_agent/`**: Google ADK agent project - a production-ready research assistant built with Agent Development Kit:
+    -   Powered by Gemini 2.5 Flash
+    -   CLI and Web-based interfaces
+    -   Environment-based configuration
+    -   Extensible tool framework
+    -   Includes `docs/` - Day-by-day learning documentation with concepts, best practices, and troubleshooting guides
+
 -   **`t2t-bot/`**: The main Text-to-Text Bot project. A comprehensive, observable, and dynamically capable bot with:
     -   Interactive Chat
     -   Dynamic Thinking Mode

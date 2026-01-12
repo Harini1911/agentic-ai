@@ -1,8 +1,4 @@
-# Documentation Index
-
-This folder contains day-by-day learning documentation for the Agentic AI journey with Google's tooling.
-
-## Learning Path
+# Learning Path
 
 ### Day 1 - Google ADK Quickstart
 **File:** [day-01-adk-quickstart.md](./day-01-adk-quickstart.md)  

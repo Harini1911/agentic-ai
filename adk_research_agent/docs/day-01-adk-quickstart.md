@@ -318,4 +318,4 @@ For each day's learning, document:
 
 ---
 
-**End of Day 1 - Great progress!**
+**End of Day 1**

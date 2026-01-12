@@ -309,35 +309,6 @@ For each day's learning, document:
 - Open questions
 - Improvement ideas
 
----
-
-## Git Commit Message
-
-```
-feat(adk): add Day 1 ADK quickstart agent and documentation
-
-- Create adk_research_agent with Gemini 2.5 Flash
-- Configure environment variables with proper UTF-8 encoding
-- Add mock tool implementation (get_current_time)
-- Test agent in both CLI and web modes
-- Document ADK concepts, project structure, and best practices
-- Troubleshoot and fix .env encoding issues (UTF-8 BOM removal)
-- Add comprehensive Day 1 documentation in docs/day-01-adk-quickstart.md
-
-Closes #N/A
-```
-
-**Alternative (shorter):**
-```
-feat: Day 1 - Google ADK quickstart with research agent
-
-- Features:
-- Working ADK agent with Gemini 2.5 Flash
-- CLI interface: uv run adk run adk_research_agent
-- Web interface: uv run adk web --port 8000
-- Comprehensive troubleshooting documentation
-- Best practices and code quality guidelines
-```
 
 ## Resources
 

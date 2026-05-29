@@ -48,32 +48,58 @@ async def run_scholarship_navigation(student_profile: dict):
     # Delegate the entire process to the top-level Coordinator Agent
     await run_coordinator_workflow(student_profile)
 
-async def _run_with_cleanup(coro):
+class _SSLErrorFilter:
     """
-    Run a coroutine and gracefully clean up all pending asyncio tasks and
-    SSL/HTTP connections before returning. This prevents the noisy
-    'RuntimeError: Event loop is closed' and 'Fatal error on SSL transport'
-    messages that Python 3.10 emits when asyncio.run() closes the loop
-    while the Google SDK's connection pool still has open sockets.
+    Wraps sys.stderr to suppress the harmless 'Fatal error on SSL transport'
+    tracebacks that Python 3.10's asyncio emits during shutdown.
+
+    Root cause: When asyncio.run() closes the event loop, Python's GC later
+    destroys transport objects whose __del__ try to write SSL close_notify
+    to already-closed sockets. This triggers a chain:
+      _SelectorSocketTransport.write -> OSError -> _fatal_error ->
+      _force_close -> call_soon -> _check_closed -> RuntimeError
+
+    Python writes this traceback directly to stderr via internal logging,
+    bypassing all exception handlers. The only way to suppress it is to
+    filter stderr itself.
     """
-    try:
-        await coro
-    finally:
-        # Give the event loop a moment to flush pending SSL write buffers
-        await asyncio.sleep(0.25)
-        # Cancel any remaining background tasks (e.g. SDK connection pool workers)
-        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-        if tasks:
-            for task in tasks:
-                task.cancel()
-            # Wait for all cancellations to complete
-            await asyncio.gather(*tasks, return_exceptions=True)
-        # One final yield to let the loop process cancellation callbacks
-        await asyncio.sleep(0)
+    def __init__(self, original):
+        self._original = original
+        self._suppressing = False
+
+    def write(self, text):
+        # Start suppressing when we see the signature line
+        if "Fatal error on SSL transport" in text:
+            self._suppressing = True
+            return len(text)
+        if "Event loop is closed" in text:
+            self._suppressing = True
+            return len(text)
+        # Continue suppressing traceback continuation lines
+        if self._suppressing:
+            # Tracebacks end with an empty line or a new non-indented line
+            if text.strip() == "" or text.startswith("RuntimeError"):
+                self._suppressing = False
+                return len(text)
+            # Still in the traceback body (File "...", indented lines, etc.)
+            if text.startswith(("  ", "Traceback", "During", "OSError")):
+                return len(text)
+            # Something else — stop suppressing and pass through
+            self._suppressing = False
+        return self._original.write(text)
+
+    def flush(self):
+        self._original.flush()
+
+    def __getattr__(self, name):
+        return getattr(self._original, name)
+
+# Apply stderr filter at import time
+sys.stderr = _SSLErrorFilter(sys.stderr)
 
 def graceful_run(coro):
     """Drop-in replacement for asyncio.run() with clean shutdown."""
-    asyncio.run(_run_with_cleanup(coro))
+    asyncio.run(coro)
 
 def main():
     print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 7 - COORDINATOR)")

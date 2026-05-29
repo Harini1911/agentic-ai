@@ -1,5 +1,4 @@
 from google.adk.agents import Agent
-from config.llm_config import ADK_MODEL
 from tools.search_by_education import search_by_education
 from tools.search_by_income import search_by_income
 from tools.search_by_marks import search_by_marks
@@ -8,7 +7,7 @@ from tools.scholarship_details import get_scholarship_details
 # Create Phase 2 ScholarshipAgent equipped with fine-grained tools
 root_agent = Agent(
     name="ScholarshipAgent",
-    model=ADK_MODEL,
+    model="gemini-2.5-flash",
     description="An AI agent that uses dedicated search tools to check a student's eligibility and retrieve details.",
     instruction="""
 You are an expert Scholarship Navigator Agent. Your role is to help students discover eligible scholarships using your suite of dedicated tools.

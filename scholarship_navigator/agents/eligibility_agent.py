@@ -1,6 +1,5 @@
 from google.adk.agents import Agent
 from pydantic import BaseModel, Field
-from config.llm_config import ADK_MODEL
 
 # Output schema for eligibility check
 class EligibilityOutput(BaseModel):
@@ -9,7 +8,7 @@ class EligibilityOutput(BaseModel):
 
 eligibility_agent = Agent(
     name="EligibilityAgent",
-    model=ADK_MODEL,
+    model="gemini-2.5-flash",
     description="Determines whether a student profile satisfies the minimum eligibility thresholds.",
     instruction="""
 You are the EligibilityAgent. Your sole responsibility is to evaluate if the student satisfies the minimum eligibility criteria.

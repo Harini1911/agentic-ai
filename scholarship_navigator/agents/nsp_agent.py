@@ -5,7 +5,6 @@ from tools.search_by_education import search_by_education
 from tools.search_by_income import search_by_income
 from tools.search_by_marks import search_by_marks
 from tools.scholarship_details import get_scholarship_details
-from config.llm_config import ADK_MODEL
 
 class ScholarshipItem(BaseModel):
     id: str = Field(description="The unique ID of the scholarship")
@@ -17,7 +16,7 @@ class SourceScholarshipOutput(BaseModel):
 
 nsp_agent = Agent(
     name="NSPScholarshipAgent",
-    model=ADK_MODEL,
+    model="gemini-2.5-flash",
     description="Searches national-level scholarships on the National Scholarship Portal.",
     instruction="""
 You are the NSPScholarshipAgent. Your job is to search the National Scholarship Portal (NSP) database using your tools.

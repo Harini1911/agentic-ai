@@ -7,7 +7,6 @@ from agents.profile_agent import ProfileInput, ProfileOutput
 from agents.eligibility_agent import EligibilityOutput
 from agents.nsp_agent import SourceScholarshipOutput
 from tools.scholarship_repository import set_active_source
-from config.llm_config import ADK_MODEL
 
 # Dynamic callbacks to ensure safe context variables per async source search execution
 def nsp_before(ctx=None, **kwargs):
@@ -26,7 +25,7 @@ def create_profile_agent() -> Agent:
     """Creates a fresh instance of the ProfileAgent."""
     return Agent(
         name="ProfileAgent",
-        model=ADK_MODEL,
+        model="gemini-2.5-flash",
         description="Normalizes and validates student profile parameters.",
         instruction="""
 You are the ProfileAgent. Your sole responsibility is to normalize and validate the incoming student profile.
@@ -53,7 +52,7 @@ def create_eligibility_agent() -> Agent:
     """Creates a fresh instance of the EligibilityAgent."""
     return Agent(
         name="EligibilityAgent",
-        model=ADK_MODEL,
+        model="gemini-2.5-flash",
         description="Determines whether a student profile satisfies the minimum eligibility thresholds.",
         instruction="""
 You are the EligibilityAgent. Your sole responsibility is to evaluate if the student satisfies the minimum eligibility criteria.
@@ -87,7 +86,7 @@ def create_parallel_search_agent() -> Agent:
     # 1. Instantiate fresh source agents
     nsp = Agent(
         name="NSPScholarshipAgent",
-        model=ADK_MODEL,
+        model="gemini-2.5-flash",
         description="Searches national-level scholarships on the National Scholarship Portal.",
         instruction="""
 You are the NSPScholarshipAgent. Your job is to search the National Scholarship Portal (NSP) database using your tools.
@@ -102,7 +101,7 @@ Invoke search tools, intersect, retrieve details, and return results matching th
 
     state = Agent(
         name="StateScholarshipAgent",
-        model=ADK_MODEL,
+        model="gemini-2.5-flash",
         description="Searches state-level and state-specific scholarships.",
         instruction="""
 You are the StateScholarshipAgent. Your job is to search the State Scholarship database using your tools.
@@ -117,7 +116,7 @@ Invoke search tools, intersect, retrieve details, and return results matching th
 
     uni = Agent(
         name="UniversityScholarshipAgent",
-        model=ADK_MODEL,
+        model="gemini-2.5-flash",
         description="Searches university-specific and institution-level scholarships.",
         instruction="""
 You are the UniversityScholarshipAgent. Your job is to search the University Scholarship database using your tools.
@@ -132,7 +131,7 @@ Invoke search tools, intersect, retrieve details, and return results matching th
 
     priv = Agent(
         name="PrivateScholarshipAgent",
-        model=ADK_MODEL,
+        model="gemini-2.5-flash",
         description="Searches corporate, NGO, and private scholarships.",
         instruction="""
 You are the PrivateScholarshipAgent. Your job is to search the Private Scholarship database using your tools.
@@ -154,7 +153,7 @@ Invoke search tools, intersect, retrieve details, and return results matching th
     # 3. Return the fresh main search agent wrapping this workflow
     return Agent(
         name="ParallelScholarshipSearchAgent",
-        model=ADK_MODEL,
+        model="gemini-2.5-flash",
         description="Orchestrates concurrent searches across multiple providers and merges, deduplicates, and formats their results.",
         instruction="""
 You are the ParallelScholarshipSearchAgent. Your responsibility is to coordinate the parallel search of scholarships across different sources and produce a deduplicated, unified summary.

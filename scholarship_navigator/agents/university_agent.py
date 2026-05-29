@@ -1,14 +1,15 @@
 from google.adk.agents import Agent
+from pydantic import BaseModel, Field
+from typing import List
 from tools.search_by_education import search_by_education
 from tools.search_by_income import search_by_income
 from tools.search_by_marks import search_by_marks
 from tools.scholarship_details import get_scholarship_details
 from agents.nsp_agent import SourceScholarshipOutput
-from config.llm_config import ADK_MODEL
 
 university_agent = Agent(
     name="UniversityScholarshipAgent",
-    model=ADK_MODEL,
+    model="gemini-2.5-flash",
     description="Searches university-specific and institution-level scholarships.",
     instruction="""
 You are the UniversityScholarshipAgent. Your job is to search the University Scholarship database using your tools.

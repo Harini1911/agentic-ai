@@ -3,6 +3,7 @@ import sys
 import json
 import asyncio
 from typing import Dict, Any
+from dotenv import load_dotenv
 
 from google.adk.agents import Agent
 from google.adk import Runner
@@ -18,16 +19,23 @@ from agents.phd_agent import phd_agent
 from agents.international_agent import international_agent
 from memory.scholarship_memory import memory_store
 
+# Load environmental configurations
+load_dotenv()
+
 # Premium supplied API keys list for robust round-robin fallback rotation
-API_KEYS = [
-    "REDACTED_KEY_1",
-    "REDACTED_KEY_2",
-    "REDACTED_KEY_3",
-    "REDACTED_KEY_4",
-    "REDACTED_KEY_5",
-    "REDACTED_KEY_6",
-    "REDACTED_KEY_7"
-]
+env_keys = os.getenv("GEMINI_API_KEYS")
+if env_keys:
+    API_KEYS = [k.strip() for k in env_keys.split(",") if k.strip()]
+else:
+    API_KEYS = [
+        "REDACTED_KEY_1",
+        "REDACTED_KEY_2",
+        "REDACTED_KEY_3",
+        "REDACTED_KEY_4",
+        "REDACTED_KEY_5",
+        "REDACTED_KEY_6",
+        "REDACTED_KEY_7"
+    ]
 _key_index = 0
 
 def rotate_api_key():
@@ -142,8 +150,8 @@ async def run_coordinator_workflow(student_profile: dict):
                     if part.text:
                         print(part.text, end="", flush=True)
     except Exception as e:
-        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "503" in str(e) or "UNAVAILABLE" in str(e) or "aclose" in str(e) or "RuntimeError" in type(e).__name__:
-            print("\033[93m[Quota Alert] Quota/concurrency/capacity limit encountered during runner search. Rotating API key and retrying pipeline...\033[0m")
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "503" in str(e) or "UNAVAILABLE" in str(e) or "403" in str(e) or "PERMISSION_DENIED" in str(e) or "aclose" in str(e) or "RuntimeError" in type(e).__name__:
+            print("\033[93m[Quota/Key Alert] Quota, capacity, or key permission issue encountered during runner search. Rotating API key and retrying pipeline...\033[0m")
             rotate_api_key()
             try:
                 session_service = InMemorySessionService()
@@ -184,8 +192,8 @@ async def generate_with_retry(model: str, contents: Any, config: Any = None, max
             client = genai.Client(api_key=key)
             return client.models.generate_content(model=model, contents=contents, config=config)
         except Exception as e:
-            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "503" in str(e) or "UNAVAILABLE" in str(e):
-                print(f"\033[93m[Quota Alert] Quota/capacity limit exceeded. Rotating to next key... (Attempt {attempt+1}/{max_retries})\033[0m")
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "503" in str(e) or "UNAVAILABLE" in str(e) or "403" in str(e) or "PERMISSION_DENIED" in str(e):
+                print(f"\033[93m[Quota/Key Alert] Quota/capacity/permission limit exceeded. Rotating to next key... (Attempt {attempt+1}/{max_retries})\033[0m")
                 rotate_api_key()
                 await asyncio.sleep(1)
             else:
@@ -324,8 +332,8 @@ async def handle_coordinator_turn(user_query: str, session_id: str) -> str:
                         if part.text:
                             output_text += part.text
         except Exception as e:
-            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "503" in str(e) or "UNAVAILABLE" in str(e) or "aclose" in str(e) or "RuntimeError" in type(e).__name__:
-                print("\033[93m[Quota Alert] Quota/concurrency/capacity limit encountered during ADK turn search. Rotating API key and retrying pipeline...\033[0m")
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "503" in str(e) or "UNAVAILABLE" in str(e) or "403" in str(e) or "PERMISSION_DENIED" in str(e) or "aclose" in str(e) or "RuntimeError" in type(e).__name__:
+                print("\033[93m[Quota/Key Alert] Quota, capacity, or key permission issue encountered during ADK turn search. Rotating API key and retrying pipeline...\033[0m")
                 rotate_api_key()
                 try:
                     session_service = InMemorySessionService()

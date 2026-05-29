@@ -1,2 +1,0 @@
-2026-05-29T16:02:52 [INFO] [LLM Factory] Initialized provider=ollama | model=google/gemma-4-26B-A4B-it | endpoint=http://103.42.51.87/llm | api_type=ollama
-2026-05-29T16:04:24 [INFO] [LLM Factory] Initialized provider=ollama | model=google/gemma-4-26B-A4B-it | endpoint=http://103.42.51.87/llm | api_type=ollama

@@ -22,20 +22,16 @@ from memory.scholarship_memory import memory_store
 # Load environmental configurations
 load_dotenv()
 
-# Premium supplied API keys list for robust round-robin fallback rotation
+# Load API keys exclusively from environment — NEVER hardcode keys in source code
 env_keys = os.getenv("GEMINI_API_KEYS")
-if env_keys:
-    API_KEYS = [k.strip() for k in env_keys.split(",") if k.strip()]
-else:
-    API_KEYS = [
-        "REDACTED_KEY_1",
-        "REDACTED_KEY_2",
-        "REDACTED_KEY_3",
-        "REDACTED_KEY_4",
-        "REDACTED_KEY_5",
-        "REDACTED_KEY_6",
-        "REDACTED_KEY_7"
-    ]
+if not env_keys:
+    raise RuntimeError(
+        "GEMINI_API_KEYS not found in environment.\n"
+        "Create a .env file in scholarship_navigator/ with:\n"
+        "  GEMINI_API_KEYS=your_key_1,your_key_2,...\n"
+        "Never hardcode API keys in source code."
+    )
+API_KEYS = [k.strip() for k in env_keys.split(",") if k.strip()]
 _key_index = 0
 
 def rotate_api_key():

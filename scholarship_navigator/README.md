@@ -1,4 +1,4 @@
-# Phase 1, 2, 3 & 4: Scholarship Navigator Agent
+# Phase 1, 2, 3, 4 & 5: Scholarship Navigator Agent
 
 A production-quality AI agent built using **Google's Agent Development Kit (ADK)** to navigate, filter, and match student profiles with eligible local scholarships.
 
@@ -40,42 +40,56 @@ A **Router Agent** acts as an intelligent receptionist. It reviews user input, d
 ### What Is a Sequential Workflow?
 A **Sequential Workflow** executes multiple specialized agents in a fixed, predefined order. The output of one agent becomes the input of the next agent, creating a robust data pipeline.
 
-### Why Sequential Workflows Matter
-* **Without Sequential Workflow:** A monolithic agent is responsible for input validation, threshold verification, tool calling, and output styling.
-* **With Sequential Workflow:** The pipeline splits the responsibility into a modular chain of three distinct agents: `Profile Agent` -> `Eligibility Agent` -> `Scholarship Search Agent`.
+---
+
+## Phase 5 – Parallel Workflow Pattern
+
+### What Is a Parallel Workflow?
+A **Parallel Workflow** executes multiple independent tasks simultaneously and merges their results into a single response.
+
+### Why Parallel Workflows Matter
+* **Without Parallel Workflow (Sequential Search):** Searching four different database providers (National, State, University, Private) sequentially multiplies network/disk latency, resulting in a sluggish user experience.
+* **With Parallel Workflow:** The four database source agents are launched concurrently. Total search latency is capped at the speed of the single slowest lookup.
 
 **Benefits:**
-* **Modular Design:** Easier debugging and testing of individual stages.
-* **Early Exit:** If the `Eligibility Agent` determines the student does not satisfy minimum criteria (e.g. marks < 60%), the pipeline exits immediately to conserve tokens.
+* **Fast Execution:** Executes all lookup processes concurrently.
+* **Better Scalability:** Additional search providers can be integrated and queried concurrently without affecting overall system latency.
 
 ### Architecture
 
 ```text
-User
+Profile Agent
  ↓
-Router Agent (ScholarshipRouterAgent)
+Eligibility Agent
  ↓
-Profile Agent (Normalizes Profile Input)
- ↓
-Eligibility Agent (Validates Marks & Income Limits)
- ↓
-Scholarship Search Agent (Retrieves Scholarships via Tools)
+
+Parallel Search (Orchestrated by ParallelScholarshipSearchAgent)
+
+ ├── NSP Agent (reads nsp_scholarships.json)
+ ├── State Agent (reads state_scholarships.json)
+ ├── University Agent (reads university_scholarships.json)
+ └── Private Agent (reads private_scholarships.json)
+
+ ↓ (Wait for all to finish)
+
+Merge & Deduplicate (Removes duplicates by name/id)
  ↓
 Response
 ```
 
 ### ADK Concepts Learned
 
-* **Sequential Execution:** Linear orchestration of nested sub-agents one after another using `SequentialAgent`.
-* **Agent Chaining:** Sharing states between steps in the execution pipeline via `output_key` context references.
-* **Early Exit:** Terminating the workflow early if eligibility rules fail.
+* **Parallel Agents:** Concurrent execution of nested sub-agents one after another using `ParallelAgent`.
+* **Result Aggregation:** Accessing and combining individual sub-agent structured output variables in the parent orchestrator.
+* **Deduplication:** Filtering multi-sourced items (e.g. `National Merit Scholarship` appearing in both NSP and University listings) to display only once in the final card.
 
 ### Execution Walkthrough
 
-1. **User submits profile:** The B.Tech profile is routed to `UGScholarshipAgent`.
-2. **Profile Agent validates:** The agent normalizes values and writes valid status to the context.
-3. **Eligibility Agent evaluates:** The agent checks eligibility boundaries (marks >= 60%, income <= 10L).
-4. **Scholarship Search Agent retrieves:** If eligible, calls tools to compile the matching list. If ineligible, exits early with a specialized rejection card.
+1. **User submits profile:** The student profile is routed to `UGScholarshipAgent`.
+2. **Sequential checks execute:** The profile is validated by `Profile Agent` and marked as eligible by `Eligibility Agent`.
+3. **Parallel Search starts:** `ParallelScholarshipSearchAgent` concurrently triggers `NSPScholarshipAgent`, `StateScholarshipAgent`, `UniversityScholarshipAgent`, and `PrivateScholarshipAgent`.
+4. **Contextvars isolate sources:** Async context variables ensure each agent queries its own `.json` database file safely.
+5. **Results aggregated & deduplicated:** Combined results are merged, duplicate IDs are removed, and the unified group breakdown is rendered.
 
 ---
 
@@ -101,13 +115,13 @@ export GEMINI_API_KEY="your-gemini-api-key"
 You can run the program in two different modes.
 
 #### A. Standard Demo Mode (Default)
-Runs a pre-loaded B.Tech student profile to showcase undergraduate routing and sequential execution:
+Runs a pre-loaded B.Tech student profile to showcase undergraduate routing, sequential checking, and parallel source lookups:
 ```bash
 uv run python3 app.py
 ```
 
 #### B. Interactive CLI Mode
-Allows you to enter your own custom name, educational level, country preference, marks, and income to run the sequential validation pipeline:
+Allows you to enter your own custom name, educational level, country preference, marks, and income to run the multi-agent parallel pipeline:
 ```bash
 uv run python3 app.py -i
 # OR
@@ -123,3 +137,4 @@ Detailed information and conceptual breakdowns of each phase:
 * **[Phase 2 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase2.md)**: Deep dive into the Tool Calling Pattern and modular tools.
 * **[Phase 3 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase3.md)**: Conceptual guide covering the multi-agent Router Workflow pattern.
 * **[Phase 4 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase4.md)**: Conceptual guide covering the Sequential Workflow pipeline and early exits.
+* **[Phase 5 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase5.md)**: Conceptual guide covering the Parallel Workflow database search and deduplication.

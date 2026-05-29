@@ -1,0 +1,11 @@
+[
+  {
+    "id": "SCH001",
+    "name": "National Merit Scholarship",
+    "education_level": "B.Tech",
+    "min_marks": 90,
+    "max_income": 500000,
+    "state": "All",
+    "amount": 50000
+  }
+]

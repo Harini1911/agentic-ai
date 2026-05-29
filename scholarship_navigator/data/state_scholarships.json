@@ -1,0 +1,11 @@
+[
+  {
+    "id": "SCH002",
+    "name": "Tamil Nadu Excellence Scholarship",
+    "education_level": "B.Tech",
+    "min_marks": 85,
+    "max_income": 300000,
+    "state": "Tamil Nadu",
+    "amount": 30000
+  }
+]

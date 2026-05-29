@@ -1,0 +1,11 @@
+[
+  {
+    "id": "SCH004",
+    "name": "Tata Education Grant",
+    "education_level": "B.Tech",
+    "min_marks": 75,
+    "max_income": 250000,
+    "state": "All",
+    "amount": 35000
+  }
+]

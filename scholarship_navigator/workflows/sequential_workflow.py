@@ -1,10 +1,25 @@
-from google.adk.agents import Agent, SequentialAgent
+from google.adk.agents import Agent, SequentialAgent, ParallelAgent
 from tools.search_by_education import search_by_education
 from tools.search_by_income import search_by_income
 from tools.search_by_marks import search_by_marks
 from tools.scholarship_details import get_scholarship_details
 from agents.profile_agent import ProfileInput, ProfileOutput
 from agents.eligibility_agent import EligibilityOutput
+from agents.nsp_agent import SourceScholarshipOutput
+from tools.scholarship_repository import set_active_source
+
+# Dynamic callbacks to ensure safe context variables per async source search execution
+def nsp_before(ctx):
+    set_active_source("nsp")
+
+def state_before(ctx):
+    set_active_source("state")
+
+def university_before(ctx):
+    set_active_source("university")
+
+def private_before(ctx):
+    set_active_source("private")
 
 def create_profile_agent() -> Agent:
     """Creates a fresh instance of the ProfileAgent."""
@@ -62,52 +77,133 @@ Do NOT search for specific scholarships.
         output_key="eligibility_data"
     )
 
-def create_scholarship_search_agent() -> Agent:
-    """Creates a fresh instance of the ScholarshipSearchAgent."""
-    return Agent(
-        name="ScholarshipSearchAgent",
+def create_parallel_search_agent() -> Agent:
+    """
+    Creates a fresh instance of the ParallelScholarshipSearchAgent,
+    establishing fresh nested sub-agent instances (NSP, State, etc.)
+    to strictly satisfy the Single Parent Rule in ADK.
+    """
+    # 1. Instantiate fresh source agents
+    nsp = Agent(
+        name="NSPScholarshipAgent",
         model="gemini-2.5-flash",
-        description="Invokes search tools for eligible profiles and compiles the final recommendation list.",
+        description="Searches national-level scholarships on the National Scholarship Portal.",
         instruction="""
-You are the ScholarshipSearchAgent. Your responsibility is to retrieve matching scholarships for eligible profiles, or report eligibility failures.
+You are the NSPScholarshipAgent. Your job is to search the National Scholarship Portal (NSP) database using your tools.
+Read 'profile_data' from context: `education_level`, `annual_income`, and `marks_percentage`.
+Invoke search tools, intersect, retrieve details, and return results matching the SourceScholarshipOutput schema.
+""",
+        tools=[search_by_education, search_by_income, search_by_marks, get_scholarship_details],
+        output_schema=SourceScholarshipOutput,
+        output_key="nsp_results",
+        before_agent_callback=nsp_before
+    )
 
-Follow this exact workflow:
-1. First, check the context key 'eligibility_data' to see if the student is eligible.
-   - If the student is NOT eligible (i.e. 'eligible' is false), you MUST immediately terminate the workflow and output exactly this text (replacing [Reason] with the reason from 'eligibility_data'):
+    state = Agent(
+        name="StateScholarshipAgent",
+        model="gemini-2.5-flash",
+        description="Searches state-level and state-specific scholarships.",
+        instruction="""
+You are the StateScholarshipAgent. Your job is to search the State Scholarship database using your tools.
+Read 'profile_data' from context: `education_level`, `annual_income`, and `marks_percentage`.
+Invoke search tools, intersect, retrieve details, and return results matching the SourceScholarshipOutput schema.
+""",
+        tools=[search_by_education, search_by_income, search_by_marks, get_scholarship_details],
+        output_schema=SourceScholarshipOutput,
+        output_key="state_results",
+        before_agent_callback=state_before
+    )
+
+    uni = Agent(
+        name="UniversityScholarshipAgent",
+        model="gemini-2.5-flash",
+        description="Searches university-specific and institution-level scholarships.",
+        instruction="""
+You are the UniversityScholarshipAgent. Your job is to search the University Scholarship database using your tools.
+Read 'profile_data' from context: `education_level`, `annual_income`, and `marks_percentage`.
+Invoke search tools, intersect, retrieve details, and return results matching the SourceScholarshipOutput schema.
+""",
+        tools=[search_by_education, search_by_income, search_by_marks, get_scholarship_details],
+        output_schema=SourceScholarshipOutput,
+        output_key="university_results",
+        before_agent_callback=university_before
+    )
+
+    priv = Agent(
+        name="PrivateScholarshipAgent",
+        model="gemini-2.5-flash",
+        description="Searches corporate, NGO, and private scholarships.",
+        instruction="""
+You are the PrivateScholarshipAgent. Your job is to search the Private Scholarship database using your tools.
+Read 'profile_data' from context: `education_level`, `annual_income`, and `marks_percentage`.
+Invoke search tools, intersect, retrieve details, and return results matching the SourceScholarshipOutput schema.
+""",
+        tools=[search_by_education, search_by_income, search_by_marks, get_scholarship_details],
+        output_schema=SourceScholarshipOutput,
+        output_key="private_results",
+        before_agent_callback=private_before
+    )
+
+    # 2. Instantiate parallel orchestrator sub-workflow
+    workflow = ParallelAgent(
+        name="ParallelScholarshipSearchWorkflow",
+        sub_agents=[nsp, state, uni, priv]
+    )
+
+    # 3. Return the fresh main search agent wrapping this workflow
+    return Agent(
+        name="ParallelScholarshipSearchAgent",
+        model="gemini-2.5-flash",
+        description="Orchestrates concurrent searches across multiple providers and merges, deduplicates, and formats their results.",
+        instruction="""
+You are the ParallelScholarshipSearchAgent. Your responsibility is to coordinate the parallel search of scholarships across different sources and produce a deduplicated, unified summary.
+
+Follow these exact steps:
+1. First, check if the student is eligible by reading the context key 'eligibility_data'.
+   - If the student is NOT eligible (i.e. 'eligible' is false), you MUST immediately terminate the workflow and output exactly this text:
 
 Unfortunately you do not meet the minimum scholarship eligibility requirements.
 
 Reason:
-[Reason]
+[Reason from eligibility_data]
 
-2. If 'eligible' is true, proceed with searching scholarships:
-   - Read the student's `education_level`, `annual_income`, and `marks_percentage` from the context key 'profile_data'.
-   - Call `search_by_education` using `education_level`.
-   - Call `search_by_income` using `annual_income`.
-   - Call `search_by_marks` using `marks_percentage`.
-   - Compute the mathematical intersection of the three lists of scholarship IDs.
-   - For each intersected scholarship ID, call `get_scholarship_details` to retrieve the scholarship's full details (specifically the name).
-3. Output the final recommendations exactly in this format:
+2. If 'eligible' is true, proceed with the parallel search:
+   - Trigger the `ParallelScholarshipSearchWorkflow` sub-agent. This will run all four source agents (NSP, State, University, Private) concurrently.
+3. Once all source agents complete, read their output keys from the context:
+   - `nsp_results` (National Scholarships)
+   - `state_results` (State Scholarships)
+   - `university_results` (University Scholarships)
+   - `private_results` (Private Scholarships)
+4. Combine the scholarship items from all four results into a single consolidated list.
+5. DEDUPLICATE the combined list:
+   - If a scholarship (matched by name or ID) appears in multiple sources (e.g. 'National Merit Scholarship' in both NSP and University), you MUST include it only ONCE in the final response.
+6. Format the final output exactly in this style (replacing [Total Count] with the number of unique matches, and listing matching names):
 
-Routing Category:
-[Determine Category Name: 'School Scholarships', 'Undergraduate Scholarships', 'Postgraduate Scholarships', 'PhD Scholarships', or 'International Scholarships']
+Found [Total Count] matching scholarships.
 
-Recommended Scholarships:
+National Scholarships:
+- [Scholarship Name]
 
-1. [Scholarship Name]
-2. [Scholarship Name]
+State Scholarships:
+- [Scholarship Name]
 
-If no scholarships qualify, state that politely under the Recommended Scholarships header. Do not output anything else.
+University Scholarships:
+- [Scholarship Name]
+
+Private Scholarships:
+- [Scholarship Name]
+
+Only list a category header if there is at least one eligible scholarship returned under that category. If a category has no matches, do not show its header at all.
 """,
-        tools=[search_by_education, search_by_income, search_by_marks, get_scholarship_details]
+        sub_agents=[workflow]
     )
 
 def create_sequential_workflow(name: str) -> SequentialAgent:
     """
     Creates a new SequentialAgent pipeline acting as a category-specific orchestrator.
-    This resolves the Single Parent Rule by instantiating fresh sub-agents.
+    This resolves the Single Parent Rule by instantiating fresh sub-agents, including the ParallelSearch agent.
     """
     return SequentialAgent(
         name=name,
-        sub_agents=[create_profile_agent(), create_eligibility_agent(), create_scholarship_search_agent()]
+        sub_agents=[create_profile_agent(), create_eligibility_agent(), create_parallel_search_agent()]
     )

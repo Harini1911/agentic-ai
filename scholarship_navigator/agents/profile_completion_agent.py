@@ -1,9 +1,10 @@
 from google.adk.agents import Agent
+from config.llm_config import ADK_MODEL
 
 # Define the specialized ProfileCompletionAgent for loop workflows
 profile_completion_agent = Agent(
     name="ProfileCompletionAgent",
-    model="gemini-2.5-flash",
+    model=ADK_MODEL,
     description="Inspects the student profile, detects missing required fields, and generates standard follow-up questions.",
     instruction="""
 You are the ProfileCompletionAgent. Your role is to examine the student profile and generate the exact follow-up question for the first missing required field.

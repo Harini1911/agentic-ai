@@ -1,4 +1,5 @@
 from google.adk.agents import Agent
+from config.llm_config import ADK_MODEL
 from tools.search_by_education import search_by_education
 from tools.search_by_income import search_by_income
 from tools.search_by_marks import search_by_marks
@@ -6,7 +7,7 @@ from tools.scholarship_details import get_scholarship_details
 
 scholarship_search_agent = Agent(
     name="ScholarshipSearchAgent",
-    model="gemini-2.5-flash",
+    model=ADK_MODEL,
     description="Invokes search tools for eligible profiles and compiles the final recommendation list.",
     instruction="""
 You are the ScholarshipSearchAgent. Your responsibility is to retrieve matching scholarships for eligible profiles, or report eligibility failures.

@@ -1,5 +1,6 @@
 from google.adk.agents import Agent
 from pydantic import BaseModel, Field
+from config.llm_config import ADK_MODEL
 
 # Input schema for profile validation
 class ProfileInput(BaseModel):
@@ -21,7 +22,7 @@ class ProfileOutput(BaseModel):
 
 profile_agent = Agent(
     name="ProfileAgent",
-    model="gemini-2.5-flash",
+    model=ADK_MODEL,
     description="Normalizes and validates student profile parameters.",
     instruction="""
 You are the ProfileAgent. Your sole responsibility is to normalize and validate the incoming student profile.

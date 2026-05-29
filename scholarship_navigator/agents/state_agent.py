@@ -6,10 +6,11 @@ from tools.search_by_income import search_by_income
 from tools.search_by_marks import search_by_marks
 from tools.scholarship_details import get_scholarship_details
 from agents.nsp_agent import SourceScholarshipOutput
+from config.llm_config import ADK_MODEL
 
 state_agent = Agent(
     name="StateScholarshipAgent",
-    model="gemini-2.5-flash",
+    model=ADK_MODEL,
     description="Searches state-level and state-specific scholarships.",
     instruction="""
 You are the StateScholarshipAgent. Your job is to search the State Scholarship database using your tools.

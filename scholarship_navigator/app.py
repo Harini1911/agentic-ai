@@ -48,6 +48,33 @@ async def run_scholarship_navigation(student_profile: dict):
     # Delegate the entire process to the top-level Coordinator Agent
     await run_coordinator_workflow(student_profile)
 
+async def _run_with_cleanup(coro):
+    """
+    Run a coroutine and gracefully clean up all pending asyncio tasks and
+    SSL/HTTP connections before returning. This prevents the noisy
+    'RuntimeError: Event loop is closed' and 'Fatal error on SSL transport'
+    messages that Python 3.10 emits when asyncio.run() closes the loop
+    while the Google SDK's connection pool still has open sockets.
+    """
+    try:
+        await coro
+    finally:
+        # Give the event loop a moment to flush pending SSL write buffers
+        await asyncio.sleep(0.25)
+        # Cancel any remaining background tasks (e.g. SDK connection pool workers)
+        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+        if tasks:
+            for task in tasks:
+                task.cancel()
+            # Wait for all cancellations to complete
+            await asyncio.gather(*tasks, return_exceptions=True)
+        # One final yield to let the loop process cancellation callbacks
+        await asyncio.sleep(0)
+
+def graceful_run(coro):
+    """Drop-in replacement for asyncio.run() with clean shutdown."""
+    asyncio.run(_run_with_cleanup(coro))
+
 def main():
     print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 7 - COORDINATOR)")
     
@@ -77,24 +104,24 @@ def main():
                     "marks_percentage": marks,
                     "annual_income": income
                 }
-                asyncio.run(run_scholarship_navigation(custom_profile))
+                graceful_run(run_scholarship_navigation(custom_profile))
             except ValueError as e:
                 print(f"\033[91mInvalid input value: {e}. Running default demo instead.\033[0m")
-                asyncio.run(run_scholarship_navigation(default_profile))
+                graceful_run(run_scholarship_navigation(default_profile))
             except KeyboardInterrupt:
                 print("\nExiting interactive mode...")
         else:
             # Attempt to parse json argument
             try:
                 profile = json.loads(arg)
-                asyncio.run(run_scholarship_navigation(profile))
+                graceful_run(run_scholarship_navigation(profile))
             except json.JSONDecodeError:
                 print(f"\033[91mCould not parse JSON profile from argument. Running default demo instead.\033[0m")
-                asyncio.run(run_scholarship_navigation(default_profile))
+                graceful_run(run_scholarship_navigation(default_profile))
     else:
         # Default Demo Mode
         print("\033[90mRunning in default demo mode. Pass '-i' or '--interactive' for interactive profile input.\033[0m")
-        asyncio.run(run_scholarship_navigation(default_profile))
+        graceful_run(run_scholarship_navigation(default_profile))
 
 if __name__ == "__main__":
     main()

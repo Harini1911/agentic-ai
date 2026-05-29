@@ -1,4 +1,5 @@
 from google.adk.agents import Agent
+from config.llm_config import ADK_MODEL
 from agents.school_agent import school_agent
 from agents.ug_agent import ug_agent
 from agents.pg_agent import pg_agent
@@ -8,7 +9,7 @@ from agents.international_agent import international_agent
 # Define the central ScholarshipRouterAgent that orchestrates specialist routing
 root_agent = Agent(
     name="ScholarshipRouterAgent",
-    model="gemini-2.5-flash",
+    model=ADK_MODEL,
     description="Main router agent that analyzes the student profile and delegates to the appropriate specialized agent.",
     instruction="""
 You are the ScholarshipRouterAgent, the entry point for the Scholarship Navigator system.

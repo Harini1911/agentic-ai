@@ -1,9 +1,10 @@
 from google.adk.agents import Agent
 from workflows.parallel_workflow import parallel_search_workflow
+from config.llm_config import ADK_MODEL
 
 parallel_search_agent = Agent(
     name="ParallelScholarshipSearchAgent",
-    model="gemini-2.5-flash",
+    model=ADK_MODEL,
     description="Orchestrates concurrent searches across multiple providers and merges, deduplicates, and formats their results.",
     instruction="""
 You are the ParallelScholarshipSearchAgent. Your responsibility is to coordinate the parallel search of scholarships across different sources and produce a deduplicated, unified summary.

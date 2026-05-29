@@ -1,4 +1,4 @@
-# Phase 1, 2 & 3: Scholarship Navigator Agent
+# Phase 1, 2, 3 & 4: Scholarship Navigator Agent
 
 A production-quality AI agent built using **Google's Agent Development Kit (ADK)** to navigate, filter, and match student profiles with eligible local scholarships.
 
@@ -20,46 +20,62 @@ AI agents represent a paradigm shift from keyword searches to smart assistance. 
 
 ---
 
+## Phase 2 – Tool Calling Pattern
+
+### What Problem Does Tool Calling Solve?
+* **Without Tools:** The agent contains all data and comparison logic. This bloats the LLM context, introduces calculation errors, and fails to scale.
+* **With Tools:** The agent delegates specialized tasks to deterministic Python functions. It stays focused on reasoning, orchestration, and natural communication.
+
+---
+
 ## Phase 3 – Router Workflow Pattern
 
 ### What Is a Router Agent?
 A **Router Agent** acts as an intelligent receptionist. It reviews user input, decides which specialized agent is best equipped to handle the task, and delegates execution entirely.
 
-### Why Router Workflows Matter
-* **Without a Router:** A single agent tries to handle school, college, PG, PhD, and international requirements, leading to prompt bloat, mathematical errors, and poor scaling.
-* **With a Router:** Complex monolithic prompts are divided into small, domain-specific sub-agents, guaranteeing specialization and better maintainability.
+---
+
+## Phase 4 – Sequential Workflow Pattern
+
+### What Is a Sequential Workflow?
+A **Sequential Workflow** executes multiple specialized agents in a fixed, predefined order. The output of one agent becomes the input of the next agent, creating a robust data pipeline.
+
+### Why Sequential Workflows Matter
+* **Without Sequential Workflow:** A monolithic agent is responsible for input validation, threshold verification, tool calling, and output styling.
+* **With Sequential Workflow:** The pipeline splits the responsibility into a modular chain of three distinct agents: `Profile Agent` -> `Eligibility Agent` -> `Scholarship Search Agent`.
+
+**Benefits:**
+* **Modular Design:** Easier debugging and testing of individual stages.
+* **Early Exit:** If the `Eligibility Agent` determines the student does not satisfy minimum criteria (e.g. marks < 60%), the pipeline exits immediately to conserve tokens.
 
 ### Architecture
 
 ```text
 User
-  ↓
+ ↓
 Router Agent (ScholarshipRouterAgent)
-  │
-  ├── School Agent (SchoolScholarshipAgent)
-  ├── UG Agent (UGScholarshipAgent)
-  ├── PG Agent (PGScholarshipAgent)
-  ├── PhD Agent (PhDScholarshipAgent)
-  └── International Agent (InternationalScholarshipAgent)
-        ↓
-     Tool Layer (Deterministic Tools)
-        ↓
- Scholarship Dataset (scholarships.json)
+ ↓
+Profile Agent (Normalizes Profile Input)
+ ↓
+Eligibility Agent (Validates Marks & Income Limits)
+ ↓
+Scholarship Search Agent (Retrieves Scholarships via Tools)
+ ↓
+Response
 ```
 
 ### ADK Concepts Learned
 
-* **Router Agent:** Classifies user context and delegates tasks using sub-agents exposed as tools.
-* **Specialized Agents:** Sub-agents representing single domain ownership and responsibilities.
-* **Routing Rules:** Deterministic rulesets deciding the execution path (e.g. routing based on `education_level` and prioritizing `country_preference != "India"` for international routing).
+* **Sequential Execution:** Linear orchestration of nested sub-agents one after another using `SequentialAgent`.
+* **Agent Chaining:** Sharing states between steps in the execution pipeline via `output_key` context references.
+* **Early Exit:** Terminating the workflow early if eligibility rules fail.
 
 ### Execution Walkthrough
 
-1. **User submits profile:** The student profile (B.Tech, India) is passed to the `ScholarshipRouterAgent`.
-2. **Router evaluates profile:** The router reviews the rules and classifies the category as *Undergraduate*.
-3. **Router delegates:** The router transfers control by invoking `UGScholarshipAgent` as a tool.
-4. **Specialist executes:** `UGScholarshipAgent` calls search tools and intersects results.
-5. **Results returned:** Recommended scholarships are printed in a structured layout.
+1. **User submits profile:** The B.Tech profile is routed to `UGScholarshipAgent`.
+2. **Profile Agent validates:** The agent normalizes values and writes valid status to the context.
+3. **Eligibility Agent evaluates:** The agent checks eligibility boundaries (marks >= 60%, income <= 10L).
+4. **Scholarship Search Agent retrieves:** If eligible, calls tools to compile the matching list. If ineligible, exits early with a specialized rejection card.
 
 ---
 
@@ -85,13 +101,13 @@ export GEMINI_API_KEY="your-gemini-api-key"
 You can run the program in two different modes.
 
 #### A. Standard Demo Mode (Default)
-Runs a pre-loaded B.Tech student profile to showcase undergraduate routing:
+Runs a pre-loaded B.Tech student profile to showcase undergraduate routing and sequential execution:
 ```bash
 uv run python3 app.py
 ```
 
 #### B. Interactive CLI Mode
-Allows you to enter your own custom name, educational level, country preference, marks, and income to route your request:
+Allows you to enter your own custom name, educational level, country preference, marks, and income to run the sequential validation pipeline:
 ```bash
 uv run python3 app.py -i
 # OR
@@ -106,3 +122,4 @@ Detailed information and conceptual breakdowns of each phase:
 * **[Phase 1 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase1.md)**: Conceptual guide covering the single agent data retrieval model.
 * **[Phase 2 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase2.md)**: Deep dive into the Tool Calling Pattern and modular tools.
 * **[Phase 3 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase3.md)**: Conceptual guide covering the multi-agent Router Workflow pattern.
+* **[Phase 4 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase4.md)**: Conceptual guide covering the Sequential Workflow pipeline and early exits.

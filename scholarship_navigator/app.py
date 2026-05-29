@@ -86,7 +86,7 @@ async def run_scholarship_navigation(student_profile: dict):
     print("\033[92m[Success] Scholarship navigation complete.\033[0m\n")
 
 def main():
-    print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 3)")
+    print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 4)")
     
     # Default student profile as per Phase 3 requirements
     default_profile = {

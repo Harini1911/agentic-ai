@@ -1,0 +1,38 @@
+[
+  {
+    "id": "SCH001",
+    "name": "National Merit Scholarship",
+    "education_level": "Class 12",
+    "min_marks": 90,
+    "max_income": 500000,
+    "state": "All",
+    "amount": 50000
+  },
+  {
+    "id": "SCH002",
+    "name": "State Excellence Scholarship",
+    "education_level": "Class 12",
+    "min_marks": 85,
+    "max_income": 300000,
+    "state": "Tamil Nadu",
+    "amount": 30000
+  },
+  {
+    "id": "SCH003",
+    "name": "Tech Pioneers Fellowship",
+    "education_level": "Class 12",
+    "min_marks": 80,
+    "max_income": 400000,
+    "state": "All",
+    "amount": 40000
+  },
+  {
+    "id": "SCH004",
+    "name": "Higher Education Support Scheme",
+    "education_level": "Graduate",
+    "min_marks": 75,
+    "max_income": 250000,
+    "state": "Karnataka",
+    "amount": 35000
+  }
+]

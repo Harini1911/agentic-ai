@@ -219,6 +219,46 @@ Response
 
 ---
 
+## Phase 8 – Memory Pattern
+
+### What Is Agent Memory?
+**Agent Memory** allows an agent to store, retrieve, and use information from previous interactions within the same conversation session, enabling continuous, adaptive, and highly relevant multi-turn dialogue.
+
+### Why Session Continuity Matters
+* **Without Memory:** Every conversational turn is treated as a separate reboot. The agent loses all previous context, leading to confusion and forcing redundant user entries.
+* **With Memory:** The agent remembers the student profile, previous recommendations, and user preferences within the same session. This allows for continuous discovery, exclusions, and document generation without repetitive profile prompts.
+
+### Memory Demonstration
+
+#### Scenario A: Agent WITH Memory
+* **Turn 1:** Finds and returns B.Tech scholarships in Tamil Nadu, recording them in memory.
+* **Turn 2:** Receives *"I am not interested in private scholarships."* and filters out corporate private listings from the session memory, returning a revised list.
+* **Turn 3:** Receives *"Tell me the required documents."* and lists exact document requirements specifically for the remaining scholarships in memory without re-requesting profile details.
+
+#### Scenario B: Agent WITHOUT Memory
+* **Turn 1:** Finds scholarships normally.
+* **Turn 2:** Receives *"I am not interested in private scholarships."* under a new session. Responds: *"Please provide more context."*
+* **Turn 3:** Receives *"Tell me the required documents."* under a new session. Responds: *"Which scholarship are you referring to?"*
+
+### Architecture
+
+```text
+User
+ ↓
+Coordinator Agent (ScholarshipCoordinatorAgent)
+ ├── Reads & Updates Session Memory (memory/scholarship_memory.py)
+ └── Workflow execution (Loop, Router, Sequential, Parallel)
+ ↓
+Response
+```
+
+### ADK Concepts Learned
+* **Session State:** Associating conversation state with unique session IDs to isolate memory context across concurrent users.
+* **Context Retention:** Short-term persistence of conversation contexts and recommendations.
+* **Adaptive Responses:** Adapting future responses based on prior outcomes stored in memory (e.g. generating documents specifically for filtered listings).
+
+---
+
 ## Further Documentation
 
 Detailed information and conceptual breakdowns of each phase:
@@ -229,3 +269,4 @@ Detailed information and conceptual breakdowns of each phase:
 * **[Phase 5 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase5.md)**: Conceptual guide covering the Parallel Workflow database search and deduplication.
 * **[Phase 6 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase6.md)**: Conceptual guide covering the Loop Workflow interactive information gathering.
 * **[Phase 7 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase7.md)**: Conceptual guide covering the Coordinator Orchestration Pattern.
+* **[Phase 8 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase8.md)**: Conceptual guide covering Session Memory and continuous multi-turn dialogue.

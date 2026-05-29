@@ -9,16 +9,16 @@ from agents.nsp_agent import SourceScholarshipOutput
 from tools.scholarship_repository import set_active_source
 
 # Dynamic callbacks to ensure safe context variables per async source search execution
-def nsp_before(ctx):
+def nsp_before(ctx=None, **kwargs):
     set_active_source("nsp")
 
-def state_before(ctx):
+def state_before(ctx=None, **kwargs):
     set_active_source("state")
 
-def university_before(ctx):
+def university_before(ctx=None, **kwargs):
     set_active_source("university")
 
-def private_before(ctx):
+def private_before(ctx=None, **kwargs):
     set_active_source("private")
 
 def create_profile_agent() -> Agent:

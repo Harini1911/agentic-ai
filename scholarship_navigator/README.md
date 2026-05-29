@@ -1,4 +1,4 @@
-# Phase 1 & 2: Scholarship Navigator Agent
+# Phase 1, 2 & 3: Scholarship Navigator Agent
 
 A production-quality AI agent built using **Google's Agent Development Kit (ADK)** to navigate, filter, and match student profiles with eligible local scholarships.
 
@@ -20,47 +20,46 @@ AI agents represent a paradigm shift from keyword searches to smart assistance. 
 
 ---
 
-## Phase 2 – Tool Calling Pattern
+## Phase 3 – Router Workflow Pattern
 
-### What Problem Does Tool Calling Solve?
-* **Without Tools:** The agent contains all data and comparison logic. This bloats the LLM context, introduces calculation errors, and fails to scale.
-* **With Tools:** The agent delegates specialized tasks to deterministic Python functions. It stays focused on reasoning, orchestration, and natural communication.
+### What Is a Router Agent?
+A **Router Agent** acts as an intelligent receptionist. It reviews user input, decides which specialized agent is best equipped to handle the task, and delegates execution entirely.
 
-**Benefits:**
-* **Reusability:** Tools can be reused across different UI/UX clients or systems.
-* **Separation of Concerns:** Filtering math and file indexing live in Python, not in English instructions.
-* **Scalability:** Easily integrates with huge databases without overwhelming the LLM's context window.
+### Why Router Workflows Matter
+* **Without a Router:** A single agent tries to handle school, college, PG, PhD, and international requirements, leading to prompt bloat, mathematical errors, and poor scaling.
+* **With a Router:** Complex monolithic prompts are divided into small, domain-specific sub-agents, guaranteeing specialization and better maintainability.
 
 ### Architecture
 
 ```text
 User
   ↓
-Scholarship Agent (ADK LLM Agent)
-  ↓
-Tool Layer
-  ├── Education Tool (search_by_education)
-  ├── Income Tool (search_by_income)
-  ├── Marks Tool (search_by_marks)
-  └── Details Tool (get_scholarship_details)
-  ↓
-Scholarship Dataset (scholarships.json)
+Router Agent (ScholarshipRouterAgent)
+  │
+  ├── School Agent (SchoolScholarshipAgent)
+  ├── UG Agent (UGScholarshipAgent)
+  ├── PG Agent (PGScholarshipAgent)
+  ├── PhD Agent (PhDScholarshipAgent)
+  └── International Agent (InternationalScholarshipAgent)
+        ↓
+     Tool Layer (Deterministic Tools)
+        ↓
+ Scholarship Dataset (scholarships.json)
 ```
 
 ### ADK Concepts Learned
 
-* **Tool Calling:** Wrapping standard Python functions as agent actions. The ADK parses functions to create JSON Schemas, letting the agent call them dynamically.
-* **Agent Responsibilities:** Decoupling *Decision-making* (Agent) from *Execution* (Tools).
-* **Separation of Concerns:** Enforcing that "Search Logic" is completely independent from "Agent instructions".
+* **Router Agent:** Classifies user context and delegates tasks using sub-agents exposed as tools.
+* **Specialized Agents:** Sub-agents representing single domain ownership and responsibilities.
+* **Routing Rules:** Deterministic rulesets deciding the execution path (e.g. routing based on `education_level` and prioritizing `country_preference != "India"` for international routing).
 
 ### Execution Walkthrough
 
-1. **User submits profile:** The student profile (Class 12, ₹2.5L income, 92% marks) is parsed by the agent.
-2. **Agent selects tools:** The agent calls `search_by_education()`, `search_by_income()`, and `search_by_marks()`.
-3. **Tools retrieve data:** The tools search the database and return candidate lists containing scholarship IDs.
-4. **Agent combines results:** The agent intersects these candidate lists to find scholarships matching all criteria.
-5. **Agent retrieves details:** The agent calls `get_scholarship_details()` for each matched ID to extract amounts and names.
-6. **Agent generates response:** The agent presents the final elegibility list.
+1. **User submits profile:** The student profile (B.Tech, India) is passed to the `ScholarshipRouterAgent`.
+2. **Router evaluates profile:** The router reviews the rules and classifies the category as *Undergraduate*.
+3. **Router delegates:** The router transfers control by invoking `UGScholarshipAgent` as a tool.
+4. **Specialist executes:** `UGScholarshipAgent` calls search tools and intersects results.
+5. **Results returned:** Recommended scholarships are printed in a structured layout.
 
 ---
 
@@ -86,13 +85,13 @@ export GEMINI_API_KEY="your-gemini-api-key"
 You can run the program in two different modes.
 
 #### A. Standard Demo Mode (Default)
-Runs a pre-loaded student profile (John, Class 12, 92% marks, family income 250,000 INR) to showcase the matching logic:
+Runs a pre-loaded B.Tech student profile to showcase undergraduate routing:
 ```bash
 uv run python3 app.py
 ```
 
 #### B. Interactive CLI Mode
-Allows you to enter your own custom name, age, educational level, income, and marks to find matched results in real time:
+Allows you to enter your own custom name, educational level, country preference, marks, and income to route your request:
 ```bash
 uv run python3 app.py -i
 # OR
@@ -106,3 +105,4 @@ uv run python3 app.py --interactive
 Detailed information and conceptual breakdowns of each phase:
 * **[Phase 1 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase1.md)**: Conceptual guide covering the single agent data retrieval model.
 * **[Phase 2 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase2.md)**: Deep dive into the Tool Calling Pattern and modular tools.
+* **[Phase 3 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase3.md)**: Conceptual guide covering the multi-agent Router Workflow pattern.

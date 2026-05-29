@@ -34,7 +34,7 @@ if os.getenv("GEMINI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
 from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-from agents.scholarship_agent import root_agent
+from agents import root_agent
 
 # Premium terminal formatting helper
 def print_header(title: str):
@@ -86,16 +86,15 @@ async def run_scholarship_navigation(student_profile: dict):
     print("\033[92m[Success] Scholarship navigation complete.\033[0m\n")
 
 def main():
-    print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 2)")
+    print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 3)")
     
-    # Default student profile as per requirements
+    # Default student profile as per Phase 3 requirements
     default_profile = {
       "name": "John",
-      "age": 17,
-      "education_level": "Class 12",
-      "state": "Tamil Nadu",
-      "annual_income": 250000,
-      "marks_percentage": 92
+      "education_level": "B.Tech",
+      "country_preference": "India",
+      "marks_percentage": 92,
+      "annual_income": 250000
     }
     
     if len(sys.argv) > 1:
@@ -105,19 +104,17 @@ def main():
             print_header("INTERACTIVE PROFILE ENTRY")
             try:
                 name = input("Enter Name (default: John): ").strip() or "John"
-                age = int(input("Enter Age (default: 17): ").strip() or "17")
-                ed_level = input("Enter Education Level (default: Class 12): ").strip() or "Class 12"
-                state = input("Enter State (default: Tamil Nadu): ").strip() or "Tamil Nadu"
-                income = float(input("Enter Family Annual Income in INR (default: 250000): ").strip() or "250000")
+                ed_level = input("Enter Education Level (default: B.Tech): ").strip() or "B.Tech"
+                country = input("Enter Country Preference (default: India): ").strip() or "India"
                 marks = float(input("Enter Marks Percentage (default: 92): ").strip() or "92")
+                income = float(input("Enter Family Annual Income in INR (default: 250000): ").strip() or "250000")
                 
                 custom_profile = {
                     "name": name,
-                    "age": age,
                     "education_level": ed_level,
-                    "state": state,
-                    "annual_income": income,
-                    "marks_percentage": marks
+                    "country_preference": country,
+                    "marks_percentage": marks,
+                    "annual_income": income
                 }
                 asyncio.run(run_scholarship_navigation(custom_profile))
             except ValueError as e:

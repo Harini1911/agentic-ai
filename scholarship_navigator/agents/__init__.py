@@ -1,1 +1,3 @@
 from .scholarship_router_agent import root_agent
+from .scholarship_coordinator_agent import scholarship_coordinator_agent
+

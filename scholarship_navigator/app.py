@@ -35,6 +35,8 @@ from google.adk import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from agents import root_agent
+from workflows.loop_workflow import run_loop_workflow
+from agents.scholarship_coordinator_agent import run_coordinator_workflow
 
 # Premium terminal formatting helper
 def print_header(title: str):
@@ -43,58 +45,17 @@ def print_header(title: str):
     print("=" * 60)
 
 async def run_scholarship_navigation(student_profile: dict):
-    print(f"\033[94m[Profile Loaded]\033[0m student: {student_profile.get('name')}, age: {student_profile.get('age')}")
-    print(f"\033[94m[Profile Details]\033[0m {json.dumps(student_profile, indent=2)}")
-    print("\033[93mInitializing ADK Runner & ScholarshipAgent...\033[0m")
-    
-    # 1. Setup session service and runner
-    session_service = InMemorySessionService()
-    runner = Runner(
-        agent=root_agent,
-        app_name="scholarship_navigator",
-        session_service=session_service
-    )
-    
-    session_id = "demo_session_id"
-    user_id = "demo_user_id"
-    
-    await session_service.create_session(
-        app_name="scholarship_navigator",
-        user_id=user_id,
-        session_id=session_id
-    )
-    
-    # 2. Format query
-    query = f"Here is my student profile:\n{json.dumps(student_profile, indent=2)}"
-    content = types.Content(parts=[types.Part.from_text(text=query)])
-    
-    print("\033[93mExecuting agent query & retrieving recommendations...\033[0m")
-    print("\033[92m" + "-" * 60 + "\033[0m")
-    
-    # 3. Execute and stream the agent's response
-    async for event in runner.run_async(
-        session_id=session_id,
-        user_id=user_id,
-        new_message=content
-    ):
-        if event.content and event.content.parts:
-            for part in event.content.parts:
-                if part.text:
-                    print(part.text, end="", flush=True)
-    
-    print("\n\033[92m" + "-" * 60 + "\033[0m")
-    print("\033[92m[Success] Scholarship navigation complete.\033[0m\n")
+    # Delegate the entire process to the top-level Coordinator Agent
+    await run_coordinator_workflow(student_profile)
 
 def main():
-    print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 5)")
+    print_header("SCHOLARSHIP NAVIGATOR AGENT (PHASE 7 - COORDINATOR)")
     
-    # Default student profile as per Phase 3 requirements
+    # Default student profile for Phase 6 demonstrating Loop Workflow
     default_profile = {
       "name": "John",
       "education_level": "B.Tech",
-      "country_preference": "India",
-      "marks_percentage": 92,
-      "annual_income": 250000
+      "state": "Tamil Nadu"
     }
     
     if len(sys.argv) > 1:

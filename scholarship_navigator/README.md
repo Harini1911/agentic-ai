@@ -1,4 +1,4 @@
-# Phase 1, 2, 3, 4 & 5: Scholarship Navigator Agent
+# Scholarship Navigator Agent
 
 A production-quality AI agent built using **Google's Agent Development Kit (ADK)** to navigate, filter, and match student profiles with eligible local scholarships.
 
@@ -17,6 +17,42 @@ AI agents represent a paradigm shift from keyword searches to smart assistance. 
 * **Natural Understanding:** The AI agent acts as a smart counselor that understands unstructured or semi-structured user profiles instantly.
 * **Coordinated Tool Execution:** Instead of hardcoding all business and query logic inside the LLM itself, the agent leverages specialized deterministic tools to fetch accurate, validated data.
 * **Empathetic Explanations:** The agent translates rigid logic checks into encouraging, clear, and context-rich descriptions of *why* the student qualifies, helping boost applicant confidence.
+
+---
+## Installation & Execution
+
+### Prerequisites
+* Python 3.10 or higher.
+* A Gemini API key (set in your environment as `GEMINI_API_KEY`).
+
+### Step 1: Install Dependencies
+Install all package dependencies in your virtual environment:
+```bash
+pip install -r requirements.txt
+```
+
+### Step 2: Set Environment Variables
+Create a `.env` file at the project root or set it directly in your shell:
+```bash
+export GEMINI_API_KEY="your-gemini-api-key"
+```
+
+### Step 3: Run the Demo Application
+You can run the program in two different modes.
+
+#### A. Standard Demo Mode (Default)
+Runs an incomplete student profile to showcase the **Loop Workflow Pattern** dynamically asking questions, validating them, updating the profile, and proceeding to route and parallel search:
+```bash
+uv run python3 app.py
+```
+
+#### B. Interactive CLI Mode
+Allows you to enter your own custom name, educational level, country preference, marks, and income to run the multi-agent parallel pipeline:
+```bash
+uv run python3 app.py -i
+# OR
+uv run python3 app.py --interactive
+```
 
 ---
 
@@ -93,40 +129,93 @@ Response
 
 ---
 
-## Installation & Execution
+## Phase 6 – Loop Workflow Pattern
 
-### Prerequisites
-* Python 3.10 or higher.
-* A Gemini API key (set in your environment as `GEMINI_API_KEY`).
+### What Is a Loop Workflow?
+A **Loop Workflow** repeatedly executes a set of tasks (checking conditions, prompting for user action, and validating outputs) in a loop until a specific termination condition is satisfied (e.g., the student's profile is complete).
 
-### Step 1: Install Dependencies
-Install all package dependencies in your virtual environment:
-```bash
-pip install -r requirements.txt
+### Why Loop Workflows Matter
+* **Without a Loop Workflow:** If the student's profile is incomplete, the workflow fails because critical search parameters (income, marks, etc.) are missing.
+* **With a Loop Workflow:** The system dynamically intercepts the profile, identifies missing fields, asks precise questions, validates and normalizes inputs, updates the profile state, and loops until all required fields are complete.
+
+**Benefits:**
+* **Better User Experience:** Dynamically gathers only what is missing.
+* **Adaptive Workflows:** Gracefully handles invalid inputs and continues prompting without losing previous state.
+
+### Architecture
+
+```text
+User
+ ↓
+Profile Completion Loop (Orchestrated by workflows/loop_workflow.py)
+ ├── Inspect Profile (Detects missing fields)
+ ├── ProfileCompletionAgent (ADK Agent generates precise question)
+ ├── Terminal Prompt (Collects user input)
+ ├── Strict Validation (Checks constraints: Marks 0-100, Income numeric, etc.)
+ └── Profile Update (Applies normalizations: CGPA/percentage, B.Tech casing)
+ ↓ (Until all fields are complete)
+ 
+ScholarshipRouterAgent (Router Agent)
+ ↓ (Routes based on completed country_preference & education_level)
+ProfileAgent (Normalizes Profile Input)
+ ↓
+EligibilityAgent (Validates Marks & Income Limits)
+ ↓
+ParallelScholarshipSearchAgent (Concurrent search NSP/State/Uni/Private)
+ ↓
+Unified Deduplicated Response
 ```
 
-### Step 2: Set Environment Variables
-Create a `.env` file at the project root or set it directly in your shell:
-```bash
-export GEMINI_API_KEY="your-gemini-api-key"
+### ADK Concepts Learned
+* **Loop Workflow Pattern:** Dynamic evaluation and execution of steps repeatedly until an exit condition is met.
+* **State Updates:** Preserving previously gathered profile values while updating missing fields interactively.
+* **Input Validation & Normalization:** Standardizing user responses (e.g. "abroad" -> "International", casing, range constraints) to prevent downstream failures.
+
+### Execution Walkthrough
+1. **User submits incomplete profile:** Profile is loaded with missing `annual_income`, `marks_percentage`, and `country_preference`.
+2. **Missing fields identified:** Loop workflow detects outstanding required fields.
+3. **Interactive prompts execute:** `ProfileCompletionAgent` generates exact follow-up questions.
+4. **Validation and update:** User answers are validated (e.g., numeric checks, range checks), normalized, and profile is updated.
+5. **Loop termination:** When all 5 fields are present, the loop exits.
+6. **Scholarship pipeline proceeds:** The completed profile is sent through routing, profiling, eligibility verification, and concurrent searching.
+
+---
+
+## Phase 7 – Coordinator / Orchestration Pattern
+
+### What Is a Coordinator Agent?
+A **Coordinator Agent** manages other agents and workflows. It does not solve the task directly; it decides who should, representing the single entry point for all operations.
+
+### Why Coordinator Agents Matter
+* **Without a Coordinator:** The user must manually interface and coordinate between the Loop, Router, Sequential, and Parallel workflows.
+* **With a Coordinator:** The user interacts only with the `ScholarshipCoordinatorAgent`, which manages all workflows internally.
+
+### Architecture
+
+```text
+User
+ ↓
+Coordinator Agent (ScholarshipCoordinatorAgent)
+ ├── Loop Workflow
+ ├── Router Workflow
+ ├── Sequential Workflow
+ └── Parallel Workflow
+ ↓
+Response
 ```
 
-### Step 3: Run the Demo Application
-You can run the program in two different modes.
+### ADK Concepts Learned
+* **Orchestration:** Workflow management, dynamic delegation, and high-level decision routing.
+* **Separation of Responsibilities:** The coordinator manages execution flows while specialized workers execute task details.
+* **Workflow Composition:** Seamless integration of Loop, Router, Sequential, and Parallel models into a single, cohesive discovery engine.
 
-#### A. Standard Demo Mode (Default)
-Runs a pre-loaded B.Tech student profile to showcase undergraduate routing, sequential checking, and parallel source lookups:
-```bash
-uv run python3 app.py
-```
-
-#### B. Interactive CLI Mode
-Allows you to enter your own custom name, educational level, country preference, marks, and income to run the multi-agent parallel pipeline:
-```bash
-uv run python3 app.py -i
-# OR
-uv run python3 app.py --interactive
-```
+### Execution Walkthrough
+1. **User submits request:** The profile is passed to the `ScholarshipCoordinatorAgent`.
+2. **Completeness check:** Coordinator checks completeness; triggers Loop Workflow if any fields are missing.
+3. **Router selection:** Invokes router logic to select the specialized educational/country route (e.g. UG route).
+4. **Sequential execution:** Triggers category-specific sequential agent validation (Profile, Eligibility limits, Parallel Search).
+5. **Parallel search & deduplication:** Concurrent lookups are made, merged, and duplicate listings are filtered out.
+6. **Response returned:** Consolidated results are sent back to the user.
 
 ---
 
@@ -138,3 +227,5 @@ Detailed information and conceptual breakdowns of each phase:
 * **[Phase 3 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase3.md)**: Conceptual guide covering the multi-agent Router Workflow pattern.
 * **[Phase 4 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase4.md)**: Conceptual guide covering the Sequential Workflow pipeline and early exits.
 * **[Phase 5 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase5.md)**: Conceptual guide covering the Parallel Workflow database search and deduplication.
+* **[Phase 6 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase6.md)**: Conceptual guide covering the Loop Workflow interactive information gathering.
+* **[Phase 7 Documentation](file:///4TBHD/harini/agentic-ai/scholarship_navigator/Docs/phase7.md)**: Conceptual guide covering the Coordinator Orchestration Pattern.
